@@ -1,0 +1,20 @@
+{
+    "name": "kecik/database",
+    "description": "Database Class untuk Kecik Framework",
+    "keywords": ["kecik", "framework", "database"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dony Wahyu Isp",
+            "email": "dna.extrim@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "kecik/kecik": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {"Kecik\\": "Database/"}
+    },
+    "minimum-stability": "dev"
+}
