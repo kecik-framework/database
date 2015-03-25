@@ -1,5 +1,5 @@
 <?php
-class Kecik_MsSQL {
+class Kecik_PostgreSQL {
 	private $dbcon=NULL;
 
 	private $_select = '';
@@ -9,33 +9,33 @@ class Kecik_MsSQL {
 	}
 
 	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
-		$this->dbcon = @mssql_connect(
-		    $hostname,
-		    $username,
-		    $password
-		);
+		$hostname = (empty($hostname))?'':"host=$hostname";
+		$username = (empty($username))?'':"user=$username";
+		$password = (empty($password))?'':"password=$password";
+		$dbname   = (empty($dbname))?'':"dbname=$dbname";
+		
+		$conn_string = "$hostname port=5432 $dbname $username $password options='--client_encoding=UTF8'";
+		$this->dbcon = @pg_connect($conn_string);
 
 		if ( !$this->dbcon ) {
 		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to MsSQL ");
+		    die("Failed to connect to PostgreSQL");
 		}
-
-		mssql_select_db($dname, $this->dbcon);
 
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
-		$res = mssql_query($sql, $this->dbcon);
+		$res = pg_query($this->dbcon, $sql);
 		if (!$res)
-			echo 'Query Error';
+			echo 'Query Error: '.pg_last_error($this->dbcon);
 
 		return $res;
 	}
 
 	public function fetch($res) {
 		$result = array();
-		while( $data = mssql_fetch_object($res) ) {
+		while( $data = pg_fetch_object($res) ) {
 			$result[] = $data;
 		}
 
@@ -43,11 +43,11 @@ class Kecik_MsSQL {
 	}
 
 	public function affected() {
-        return mssql_rows_affected($this->dbcon);
+        return pg_affected_rows($this->dbcon);
     }
 
 	public function __destruct() {
-		mssql_close($this->dbcon);
+		pg_close($this->dbcon);
 	}
 
 	public function insert($table, $data) {
@@ -55,13 +55,13 @@ class Kecik_MsSQL {
 		$fields = $values = array();
 
 		while (list($field, $value) = each($data)) {
-			$fields[] = "`$field`";
-			$values[] = "'".$this->dbcon, $value."'";
+			$fields[] = $field;
+			$values[] = "'".$value."'";
 		}
 
 		$fields = implode(',', $fields);
 		$values = implode(',', $values);
-		$query = "INSERT INTO `$table` ($fields) VALUES ($values)";
+		$query = "INSERT INTO $table ($fields) VALUES ($values)";
 
 		return $this->exec($query);
 	}
@@ -71,11 +71,11 @@ class Kecik_MsSQL {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $this->dbcon, $value;
+			$value = $value;
 			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+				$and[] = "$pk$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "$pk='$value'";
 		}
 
 		$where = '';
@@ -83,11 +83,11 @@ class Kecik_MsSQL {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "`$field`='".$this->dbcon, $value."'";
+			$fieldsValues[] = "$field='".$value."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
-		$query = "UPDATE `$table` SET $fieldsValues $where";
+		$query = "UPDATE $table SET $fieldsValues $where";
 		return $this->exec($query);
 	}
 
@@ -96,18 +96,18 @@ class Kecik_MsSQL {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $this->dbcon, $value;
+			$value = $value;
 			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+				$and[] = "$pk$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "$pk='$value'";
 		}
 
 		$where = '';
 		if (count($id) > 0)
 			$where = 'WHERE '.implode(' AND ', $and);
 
-		$query = "DELETE FROM `$table` $where";
+		$query = "DELETE FROM $table $where";
 		return $this->exec($query);
 	}
 
@@ -119,10 +119,10 @@ class Kecik_MsSQL {
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
 		else
-			echo 'Query Error';
+			echo pg_last_error($this->dbcon);
 		
 		return $ret;
 	}
 }
 
-return new Kecik_MsSQL();
+return new Kecik_PostgreSQL;

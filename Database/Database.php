@@ -45,18 +45,19 @@ class Database {
 		$this->dbname = (!empty($config->get('database.dbname')))?$config->get('database.dbname'):'';
 	}
 
-	public function connect($dbname='', $driver='mysqli', $host='localhost', $username='root', $password='') {
-		$this->driver = (!empty($driver))?strtolower($driver):strtolower($this->driver);
-		$this->hostname = (!empty($host))?$host:$this->hostname;
-		$this->username = (!empty($username))?$username:$this->username;
+	public function connect($dbname='', $driver='mysqli', $hostname='localhost', $username='root', $password='') {
+		$this->driver = (!empty($driver) && $driver != 'mysqli')?strtolower($driver):strtolower($this->driver);
+		$this->hostname = (!empty($host) && $hostname != 'localhost')?$hostname:$this->hostname;
+		$this->username = (!empty($username) && $username != 'root')?$username:$this->username;
 		$this->password = (!empty($password))?$password:$this->password;
 		$this->dbname = (!empty($dbname))?$dbname:$this->dbname;
 		
 		if (file_exists(dirname( __FILE__ )."/drivers/".$this->driver.".php")) {
 			$this->db = include_once("drivers/".$this->driver.".php");
+
 			if (in_array($this->driver, array('sqlite', 'sqlite3')))
 				$this->db->connect($this->dbname);
-			elseif ($this->driver == 'mysqli')
+			else
 				$this->db->connect($this->dbname, $this->hostname, $this->username, $this->password);
 		}
 		

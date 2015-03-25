@@ -4,6 +4,8 @@ class Kecik_Oci8 {
 
 	private $_select = '';
 
+	private $username;
+
 	public function __construct() {
 
 	}
@@ -22,10 +24,12 @@ class Kecik_Oci8 {
     		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
 
+		$this->username = $username;
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
+		
 		$stid = oci_parse($this->dbcon, $sql);
 		if (!oci_execute($stid)) {
 			$e = oci_error();
@@ -49,7 +53,7 @@ class Kecik_Oci8 {
     }
 
 	public function __destruct() {
-		oci_free_statement($stid);
+		//oci_free_statement($stid);
 		oci_close($this->dbcon);
 	}
 
@@ -58,13 +62,13 @@ class Kecik_Oci8 {
 		$fields = $values = array();
 
 		while (list($field, $value) = each($data)) {
-			$fields[] = "`$field`";
-			$values[] = "'".$this->dbcon, $value."'";
+			$fields[] = $field;
+			$values[] = "'".$value."'";
 		}
 
 		$fields = implode(',', $fields);
 		$values = implode(',', $values);
-		$query = "INSERT INTO `$table` ($fields) VALUES ($values)";
+		$query = "INSERT INTO \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" ($fields) VALUES ($values)";
 
 		return $this->exec($query);
 	}
@@ -74,11 +78,11 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $this->dbcon, $value;
+			$value = $value;
 			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+				$and[] = "$pk$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "$pk='$value'";
 		}
 
 		$where = '';
@@ -86,11 +90,11 @@ class Kecik_Oci8 {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "`$field`='".$this->dbcon, $value."'";
+			$fieldsValues[] = "$field='".$value."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
-		$query = "UPDATE `$table` SET $fieldsValues $where";
+		$query = "UPDATE \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" SET $fieldsValues $where";
 		return $this->exec($query);
 	}
 
@@ -99,18 +103,18 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $this->dbcon, $value;
+			$value = $value;
 			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+				$and[] = "$pk$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "$pk='$value'";
 		}
 
 		$where = '';
 		if (count($id) > 0)
 			$where = 'WHERE '.implode(' AND ', $and);
 
-		$query = "DELETE FROM `$table` $where";
+		$query = "DELETE FROM \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" $where";
 		return $this->exec($query);
 	}
 
@@ -118,7 +122,7 @@ class Kecik_Oci8 {
 		$ret = array();
 		$query = "SELECT ";
 		$query .= (empty($this->_select))?'* ':$this->_select;
-		$query .="FROM $table ";
+		$query .="FROM \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" ";
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
 		else {

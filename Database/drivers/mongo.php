@@ -2,37 +2,50 @@
 class Kecik_Mongo {
 	private $dbcon=NULL;
 
+	private $db;
 	private $_select = '';
 
+	private $lastSQL = '';
 	public function __construct() {
 
 	}
 
-	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
-		$this->dbcon = @new MongoClient();
+	public function connect($dbname, $hostname='mongodb://localhost:27017', $username='', $password='') {
+		$con_string='';
+		if (substr(strtolower($hostname), 0, 10) != 'mongodb://') $con_string= 'mongodb://'.$hostname;
+		if (strpos($hostname, ':')<=0) $con_string.=':27017';
 
-		if ( mysqli_connect_errno($this->dbcon) ) {
+		if (!empty($username) || !empty($password))
+			$con_string="mongodb://$username:$password@$hostname";
+		
+		$this->dbcon = new MongoClient($con_string);
+		
+		if ( !$this->dbcon ) {
 		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to MySQL: " . mysqli_connect_error());
+		    die("Failed to connect to MongoDB: ");
 		}
 
+
+		$this->db = $this->dbcon->selectDB($dbname);
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
-		$res = mysqli_query($this->dbcon, $sql);
+		$this->lastSQL = $sql;
+		$res = $this->db->execute($sql);
 		if (!$res)
-			echo 'Query Error: '.mysqli_error($this->dbcon);
+			echo 'Query Error '.$this->db->lastError();
 
 		return $res;
 	}
 
 	public function fetch($res) {
+		$res = $this->db->execute($this->lastSQL.'.toArray()');
+		$this->lastSQL = '';
 		$result = array();
-		while( $data = mysqli_fetch_object($res) ) {
-			$result[] = $data;
+		foreach ($res['retval'] as $data) {
+			$result[] = (object) $data;
 		}
-
 		return $result;
 	}
 
@@ -41,81 +54,24 @@ class Kecik_Mongo {
     }
 
 	public function __destruct() {
-		mysqli_close($this->dbcon);
+		$this->dbcon->close();
 	}
 
 	public function insert($table, $data) {
-		$table = (!empty($this->table))?$this->table:$table;
-		$fields = $values = array();
-
-		while (list($field, $value) = each($data)) {
-			$fields[] = "`$field`";
-			$values[] = "'".mysqli_real_escape_string($this->dbcon, $value)."'";
-		}
-
-		$fields = implode(',', $fields);
-		$values = implode(',', $values);
-		$query = "INSERT INTO `$table` ($fields) VALUES ($values)";
-
-		return $this->exec($query);
+		return $this->db->$table->insert($data);
 	}
 
 	public function update($table, $id, $data) {
-		$fieldsValues = array();
-		$and = array();
-
-		while(list($pk, $value) = each($id)) {
-			$value = mysqli_real_escape_string($this->dbcon, $value);
-			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
-			else
-				$and[] = "`$pk`='$value'";
-		}
-
-		$where = '';
-		if (count($id) > 0)
-			$where = 'WHERE '.implode(' AND ', $and);
-
-		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "`$field`='".mysqli_real_escape_string($this->dbcon, $value)."'";
-		}
-
-		$fieldsValues = implode(',', $fieldsValues);
-		$query = "UPDATE `$table` SET $fieldsValues $where";
-		return $this->exec($query);
+		return $this->db->$table->update($id, array('$set'=>$data));
 	}
 
 	public function delete($table, $id) {
-		$fieldsValues = array();
-		$and = array();
-
-		while(list($pk, $value) = each($id)) {
-			$value = mysqli_real_escape_string($this->dbcon, $value);
-			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
-			else
-				$and[] = "`$pk`='$value'";
-		}
-
-		$where = '';
-		if (count($id) > 0)
-			$where = 'WHERE '.implode(' AND ', $and);
-
-		$query = "DELETE FROM `$table` $where";
-		return $this->exec($query);
+		return $this->db->$table->remove($id);
 	}
 
 	public function find($table, $condition='') {
-		$ret = array();
-		$query = "SELECT ";
-		$query .= (empty($this->_select))?'* ':$this->_select;
-		$query .="FROM $table ";
-		if ($res = $this->exec($query))
-			$ret = $this->fetch($res);
-		else
-			echo mysqli_error($this->dbcon);
-		
-		return $ret;
+		$res = $this->exec("db.$table.find()");
+		return $this->fetch($res);
 	}
 }
 
