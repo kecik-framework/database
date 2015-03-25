@@ -1,5 +1,5 @@
 <?php
-class Kecik_Oci8 {
+class Kecik_MsSQL {
 	private $dbcon=NULL;
 
 	private $_select = '';
@@ -9,35 +9,33 @@ class Kecik_Oci8 {
 	}
 
 	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
-		$connection_string = "$hostname/$dbname";
-		$this->dbcon = @oci_connect(
+		$this->dbcon = @mssql_connect(
+		    $hostname,
 		    $username,
-		    $password,
-		    $connection_string
+		    $password
 		);
 
 		if ( !$this->dbcon ) {
 		    header('X-Error-Message: Fail Connecting', true, 500);
-		    $e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+		    die("Failed to connect to MsSQL ");
 		}
+
+		mssql_select_db($dname, $this->dbcon);
 
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
-		$stid = oci_parse($this->dbcon, $sql);
-		if (!oci_execute($stid)) {
-			$e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-		}
+		$res = mssql_query($sql, $this->dbcon);
+		if (!$res)
+			echo 'Query Error';
 
-		return $stid;
+		return $res;
 	}
 
-	public function fetch($stid) {
+	public function fetch($res) {
 		$result = array();
-		while (($data = oci_fetch_object($stid)) != false) {
+		while( $data = mssql_fetch_object($res) ) {
 			$result[] = $data;
 		}
 
@@ -45,12 +43,11 @@ class Kecik_Oci8 {
 	}
 
 	public function affected() {
-        return NULL;
+        return mssql_rows_affected($this->dbcon);
     }
 
 	public function __destruct() {
-		oci_free_statement($stid);
-		oci_close($this->dbcon);
+		mssql_close($this->dbcon);
 	}
 
 	public function insert($table, $data) {
@@ -121,13 +118,11 @@ class Kecik_Oci8 {
 		$query .="FROM $table ";
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
-		else {
-			$e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-		}
+		else
+			echo 'Query Error';
 		
 		return $ret;
 	}
 }
 
-return new Kecik_Oci8();
+return new Kecik_MsSQL();

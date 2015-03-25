@@ -73,10 +73,10 @@ class Database {
 	}
 
 	public function affected() {
-		if (in_array($this->driver, array('sqlite', 'sqlite3')) ) {
+		if (in_array($this->driver, array('sqlite', 'sqlite3','oci8')) )
 			echo 'Fungsi tidak support untuk driver '.$this->driver;
-		} else
-			return $this->db->affected();
+		
+		return $this->db->affected();
 	}
 
 	public function __get($table) {

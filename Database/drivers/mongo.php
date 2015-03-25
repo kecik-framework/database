@@ -1,5 +1,5 @@
 <?php
-class Kecik_Oci8 {
+class Kecik_Mongo {
 	private $dbcon=NULL;
 
 	private $_select = '';
@@ -9,35 +9,27 @@ class Kecik_Oci8 {
 	}
 
 	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
-		$connection_string = "$hostname/$dbname";
-		$this->dbcon = @oci_connect(
-		    $username,
-		    $password,
-		    $connection_string
-		);
+		$this->dbcon = @new MongoClient();
 
-		if ( !$this->dbcon ) {
+		if ( mysqli_connect_errno($this->dbcon) ) {
 		    header('X-Error-Message: Fail Connecting', true, 500);
-		    $e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+		    die("Failed to connect to MySQL: " . mysqli_connect_error());
 		}
 
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
-		$stid = oci_parse($this->dbcon, $sql);
-		if (!oci_execute($stid)) {
-			$e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-		}
+		$res = mysqli_query($this->dbcon, $sql);
+		if (!$res)
+			echo 'Query Error: '.mysqli_error($this->dbcon);
 
-		return $stid;
+		return $res;
 	}
 
-	public function fetch($stid) {
+	public function fetch($res) {
 		$result = array();
-		while (($data = oci_fetch_object($stid)) != false) {
+		while( $data = mysqli_fetch_object($res) ) {
 			$result[] = $data;
 		}
 
@@ -45,12 +37,11 @@ class Kecik_Oci8 {
 	}
 
 	public function affected() {
-        return NULL;
+        return mysqli_affected_rows($this->dbcon);
     }
 
 	public function __destruct() {
-		oci_free_statement($stid);
-		oci_close($this->dbcon);
+		mysqli_close($this->dbcon);
 	}
 
 	public function insert($table, $data) {
@@ -59,7 +50,7 @@ class Kecik_Oci8 {
 
 		while (list($field, $value) = each($data)) {
 			$fields[] = "`$field`";
-			$values[] = "'".$this->dbcon, $value."'";
+			$values[] = "'".mysqli_real_escape_string($this->dbcon, $value)."'";
 		}
 
 		$fields = implode(',', $fields);
@@ -74,7 +65,7 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $this->dbcon, $value;
+			$value = mysqli_real_escape_string($this->dbcon, $value);
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "`$pk`$value";
 			else
@@ -86,7 +77,7 @@ class Kecik_Oci8 {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "`$field`='".$this->dbcon, $value."'";
+			$fieldsValues[] = "`$field`='".mysqli_real_escape_string($this->dbcon, $value)."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
@@ -99,7 +90,7 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $this->dbcon, $value;
+			$value = mysqli_real_escape_string($this->dbcon, $value);
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "`$pk`$value";
 			else
@@ -121,13 +112,11 @@ class Kecik_Oci8 {
 		$query .="FROM $table ";
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
-		else {
-			$e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-		}
+		else
+			echo mysqli_error($this->dbcon);
 		
 		return $ret;
 	}
 }
 
-return new Kecik_Oci8();
+return new Kecik_Mongo();
