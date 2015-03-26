@@ -2,6 +2,7 @@
 ================
 
 ```php
+<?php
 /**
  * driver	: mysqli, oci8, mongo, pgsql
  * mysqli	: untuk Database MySQL
@@ -45,5 +46,5 @@ $app->get('/', function() use ($db){
 });
 
 $app->run();
-
+?>
 ```
