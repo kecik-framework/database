@@ -1,6 +1,23 @@
 **Kecik Database**
 ================
 
+## Cara Installasi
+file composer.json
+```json
+{
+	"require": {
+		"kecik/kecik": "1.0.2-alpha",
+		"kecik/database": "dev-master"
+	}
+}
+```
+
+Jalankan perintah
+```shell
+composer install
+```
+
+## Contoh penggunaan
 ```php
 <?php
 /**
