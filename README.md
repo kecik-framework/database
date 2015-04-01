@@ -6,8 +6,8 @@ file composer.json
 ```json
 {
 	"require": {
-		"kecik/kecik": "1.0.2-alpha",
-		"kecik/database": "dev-master"
+		"kecik/kecik": "1.0.*@dev",
+		"kecik/database": "1.0.*@dev"
 	}
 }
 ```
