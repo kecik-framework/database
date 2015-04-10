@@ -10,12 +10,12 @@ class Kecik_Oci8 {
 
 	}
 
-	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
-		$connection_string = "$hostname/$dbname";
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='') {
+		
 		$this->dbcon = @oci_connect(
 		    $username,
 		    $password,
-		    $connection_string
+		    $dsn
 		);
 
 		if ( !$this->dbcon ) {
@@ -118,11 +118,9 @@ class Kecik_Oci8 {
 		return $this->exec($query);
 	}
 
-	public function find($table, $condition='') {
+	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
-		$query = "SELECT ";
-		$query .= (empty($this->_select))?'* ':$this->_select;
-		$query .="FROM \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" ";
+		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
 		else {
@@ -132,6 +130,278 @@ class Kecik_Oci8 {
 		
 		return $ret;
 	}
+}
+
+class QueryHelper {
+	public static function select($list) {
+		$select = [];
+
+		if (is_array($list) && count($list) > 0) {
+			while(list($idx, $selectlist) = each($list)) {
+				while(list($id, $fields) = each($selectlist)) {
+					
+
+					if (is_int($id)) {
+						if (count($selectlist)>1)
+							$select[] = ''.$fields.'';
+						else
+							$select[] = $fields;
+
+					} elseif (is_string($fields)) {
+						if (strtoupper($id) != 'AS')
+							$select[] = strtoupper($id)."($fields)";
+						else
+							$select[count($select)-1] .= " AS $fields";
+					}
+				}
+			}
+			
+			$ret = implode(', ', $select).' ';
+		}
+
+		return (!isset($ret))?' * ':$ret;
+	}
+
+	public static function where($list, $group='and', $idx_where=1, $group_prev='') {
+		$ret = '';
+		$where = ['and'=>[], 'or'=>[]];
+		$opt = ['and', 'or'];
+		$optrow = [];
+		$wherestr = '';
+
+		if (is_array($list) && count($list) > 0) {
+			while (list($idx, $wherelist) = each($list)) {
+				
+				//sub operator
+				if ( is_string($idx) && in_array($idx, $opt)) {
+					$where[$idx][] .= '('.self::where($wherelist, $idx, $idx_where+1, $idx).')';
+					$optrow[] = $idx;
+				//logical
+				} elseif (is_array($wherelist)) {
+					
+					if (count($wherelist) == 1 && isset($wherelist[0])) {
+						$where[$group][] = $wherelist[0];
+					} else {
+						$id_step = 0;
+						while (list($cond, $val) = each($wherelist)) {
+							// if Count item 1
+							if (count($wherelist) == 1) {
+								
+								for( $i=0; $i <= substr_count($cond, '?'); $i++) {
+									$pos = strpos($cond, '?');
+									$tmp = substr($cond, 0, $pos);
+									$tmp .= $val[$i];
+									$cond = $tmp.substr($cond, $pos+1);
+								}
+
+
+								$where[$group][] = $cond;
+							// if Count item 2
+							} elseif (count($wherelist) == 2) {
+								
+								if (is_array($val)) {
+									while(list($condkey, $condval) = each($val)) {
+										for( $i=0; $i <= substr_count($cond, '?'); $i++) {
+											$pos = strpos($cond, '?');
+											$tmp = substr($cond, 0, $pos);
+											$tmp .= $condval;
+											$cond = $tmp.substr($cond, $pos+1);
+										}
+									}
+								} else {
+									if ($id_step == 0) {
+										$condfield = ''.$val.'';
+										$id_step++;
+										continue;
+									} else {
+										$cond = $val;
+									}
+								}
+
+								$where[$group][] = $condfield.$cond;
+								$condfield = '';
+							// if Count item 3
+							} elseif (count($wherelist) == 3) {
+								if (is_array($val) && !is_int($cond)) {
+									while(list($condkey, $condval) = each($val)) {
+										for( $i=0; $i <= substr_count($cond, '?'); $i++) {
+											$pos = strpos($cond, '?');
+											$tmp = substr($cond, 0, $pos);
+											$tmp .= $condval;
+											$cond = $tmp.substr($cond, $pos+1);
+										}
+									}
+								} else {
+									if ($id_step == 0) {
+										$condfield = ''.$val.'';
+										$id_step++;
+										continue;
+									} elseif($id_step == 1) {
+										if (in_array($val, ['=','!=','<>','<','>','<=','>=']))
+											$condopt = $val;
+										else {
+											$condopt = ' '.strtoupper($val).' ';
+										}
+										$id_step++;
+										continue;
+									} else {
+										if (is_array($val)) {
+											if (trim($condopt) == 'BETWEEN') { 
+												$val = implode(' AND ', $val);
+											}
+											else
+												$val = '('.implode(', ', $val).')';
+										}
+										$cond = $val;
+									}
+								}
+								
+								$where[$group][] = $condfield.$condopt.$cond;
+								$condfield = '';
+							}
+						}
+
+					}
+				}
+			}
+
+			if ($idx_where == 1 && (count($where['and'] > 0) || count($where['or'] > 0)) )
+				$ret = ' WHERE ';
+
+			if (count($optrow) > 0) {
+				
+				while (list($id, $opt) = each($optrow)) {
+					$wherestr .= implode(' '.strtoupper($opt).' ', $where[$opt]);
+					if ($id == 0 && $idx_where == 2) $wherestr .= ' '.strtoupper($group_prev).' ';
+				}
+
+				$ret .= $wherestr;
+			} else
+				$ret .= implode(' '.strtoupper($group).' ', $where[$group]);//.$wherestr;
+		}
+
+		return $ret;
+	}
+
+	public static function join($table, $list) {
+		$ret = '';
+		$join = [];
+		if (is_array($list) && count($list) > 0) {
+			while (list($idx, $joinlist) = each($list)) {
+				if (count($joinlist) == 2)
+					$join[] = strtoupper($joinlist[0]).' JOIN '.$joinlist[1];
+				elseif (count($joinlist) == 3) {
+					if (is_array($joinlist[2]) && count($joinlist[2]) == 2) {
+						$on1 = $joinlist[2][0];
+						$on2 = $joinlist[2][1];
+						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
+					} else {
+						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$joinlist[2] = $table.$joinlist[2]";
+					}
+				}
+			}
+
+			$ret = ' '.implode(', ', $join);
+		}
+
+		return $ret;
+	}
+
+	public static function union($list) {
+		$ret = '';
+		
+		if (is_array($list) && count($list) > 0) {
+			$ret = ' UNION '.implode(', ', $list);
+		}
+
+		return $ret;
+	}
+
+	public static function find($table, $filter=array(), $lmt=array(), $odr_by=array()) {
+		$select = '';
+		$from = "FROM $table";
+		$where = '';
+		$limit = '';
+		$order_by = '';
+		$union = '';
+
+		if (is_array($filter) && count($filter) > 0) {
+			
+			while(list($syntax, $query) = each($filter)) {
+				$syntax = strtoupper($syntax);
+
+				switch ($syntax) {
+					case 'SELECT':
+						$select .= self::select($query);
+					break;
+					
+					case 'WHERE':
+						$where = self::where($query);
+					break;
+
+					case 'JOIN':
+						$from .= self::join($table, $query);
+					break;
+
+					case 'UNION':
+						$union = self::union($query);
+					break;
+
+					default:
+					# code...
+					break;
+				}
+			}
+			
+		}
+
+		if (is_array($lmt) && count($lmt) > 0) {
+			if (!isset($lmt[1])) {
+				if (empty($where)) $where = ' WHERE ';
+				$where .= " ROWNUM <= $lmt[0]";
+				//$limit = " FETCH FIRST $lmt[0] ROWS ONLY";
+			} else {
+				$limit = "SELECT * FROM (SELECT a.*, ROWNUM AS my_rnum
+	                           FROM (:sql:) a
+	                           WHERE ROWNUM <= $lmt[0] + $lmt[1])
+	            		  WHERE my_rnum > $lmt[0]";
+			}
+		}
+
+		if (is_array($odr_by) && count($odr_by) > 0) {
+			$ord = ['asc'=>[], 'desc'=>[]];
+			while(list($sort, $fields) = each($odr_by)) {
+				if (strtoupper($sort) == 'ASC') {
+					$ord['asc'][] = implode(', ', $fields).' ASC';
+				} elseif (strtoupper($sort) == 'DESC') {
+					$ord['desc'][] = implode(', ', $fields).' DESC';
+				}
+
+			}
+
+			if (count($ord['asc']) > 0 || count($ord['desc'])) {
+				$order = [];
+				if (count( $ord['asc'] ) > 0)
+					$order[] .= implode(', ', $ord['asc']).' ';
+				if (count( $ord['desc'] ) > 0)
+					$order[] .= implode(', ', $ord['desc']).' ';
+				$order = implode(', ', $order);
+			} else
+				$order = '';
+
+			$order_by = ' ORDER BY '.$order;
+		}
+
+
+		$select = (empty($select))? '* ':$select;
+		
+		$sql = 'SELECT '.$select.$from.$where.$order_by.$union;
+		if (!empty($limit))
+			$sql = str_replace(':sql:', $sql, $limit);
+		
+		return $sql;
+	}
+
 }
 
 return new Kecik_Oci8();
