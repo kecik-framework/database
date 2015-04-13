@@ -369,7 +369,6 @@ class QueryHelper {
 		$select = (empty($select))? '':', '.$select;
 		//$sql = 'SELECT '.$select.$from.$where.$order_by.$limit.$union;
 		$sql = "db.$table.find({ $where }$select)".$order_by.$limit;
-		echo $sql;
 		return $sql;
 	}
 
