@@ -88,9 +88,17 @@ class QueryHelper {
 				while(list($id, $fields) = each($selectlist)) {
 					
 					if (is_int($id)) {
-						if (!strpos($fields, ':') && count($selectlist)>0)
-							$select[] = $fields.':1';
-						else
+						if (!strpos($fields, ':') && count($selectlist)>0) {
+
+							$slct = explode(',', $fields);
+							if (count($slct) > 1) {
+								while (list($id, $field) = each($slct)) {
+									$slct[$id] .= ':1';
+								}
+								$select[] = implode(',', $slct);
+							} else
+								$select[] = $fields.':1';
+						} else 
 							$select[] = $fields;
 
 					} elseif (is_string($fields)) {
@@ -102,7 +110,6 @@ class QueryHelper {
 				}
 			}
 			
-			print_r($select);
 			$ret = implode(', ', $select);
 		}
 
