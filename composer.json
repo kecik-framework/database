@@ -1,6 +1,6 @@
 {
     "name": "kecik/database",
-    "description": "Database Class untuk Kecik Framework",
+    "description": "Database Libraries for Kecik Framework",
     "keywords": ["kecik", "framework", "database"],
     "license": "MIT",
     "authors": [
