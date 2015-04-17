@@ -74,7 +74,7 @@ class Database {
 		if (file_exists(dirname( __FILE__ )."/drivers/".$this->driver.".php")) {
 			$this->db = include_once("drivers/".$this->driver.".php");
 
-			if (in_array($this->driver, array('sqlite', 'sqlite3')))
+			if (in_array($this->driver, ['sqlite', 'sqlite3']))
 				$this->db->connect($this->dbname);
 			elseif (in_array($this->driver, $this->dsnuse))
 				$this->db->connect($this->dsn, $this->dbname, $this->hostname, $this->username, $this->password);
@@ -168,7 +168,7 @@ class Database {
      * @param string $table
      * @return res
      **/
-	public function find($condition=array(), $limit=array(), $order_by=array(),$table='') {
+	public function find($condition=[], $limit=[], $order_by=[],$table='') {
 		$table = (!empty($this->table))?$this->table:$table;
 
 		return $this->db->find($table, $condition, $limit, $order_by);
