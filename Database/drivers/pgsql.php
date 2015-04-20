@@ -295,7 +295,7 @@ class QueryHelper {
 				}
 			}
 
-			$ret = ' '.implode(', ', $join);
+			$ret = ' '.implode(' ', $join);
 		}
 
 		return $ret;
