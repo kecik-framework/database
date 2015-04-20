@@ -36,8 +36,10 @@ class Kecik_Mongo {
 	public function exec($sql) {
 		$this->lastSQL = $sql;
 		$res = $this->db->execute($sql);
-		if (!$res)
+		if (!$res) {
+			echo "<strong>Query: ".$sql."</strong><br />";
 			echo 'Query Error '.$this->db->lastError();
+		}
 
 		return $res;
 	}

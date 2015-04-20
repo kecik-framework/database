@@ -33,6 +33,7 @@ class Kecik_Oci8 {
 		$stid = oci_parse($this->dbcon, $sql);
 		if (!oci_execute($stid)) {
 			$e = oci_error();
+			echo "<strong>Query: ".$sql."</strong><br />";
     		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
 
@@ -63,7 +64,10 @@ class Kecik_Oci8 {
 
 		while (list($field, $value) = each($data)) {
 			$fields[] = $field;
-			$values[] = "'".$value."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$values[] = $value[0];
+			else
+				$values[] = "'".$value."'";
 		}
 
 		$fields = implode(',', $fields);
@@ -90,7 +94,10 @@ class Kecik_Oci8 {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "$field='".$value."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$fieldsValues[] = "$field=".$value[0];
+			else
+				$fieldsValues[] = "$field='".$value."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);

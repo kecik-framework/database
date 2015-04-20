@@ -26,8 +26,10 @@ class Kecik_MySqli {
 
 	public function exec($sql) {
 		$res = mysqli_query($this->dbcon, $sql);
-		if (!$res)
+		if (!$res){
+			echo "<strong>Query: ".$sql."</strong><br />";
 			echo 'Query Error: '.mysqli_error($this->dbcon);
+		}
 
 		return $res;
 	}
@@ -55,7 +57,10 @@ class Kecik_MySqli {
 
 		while (list($field, $value) = each($data)) {
 			$fields[] = "`$field`";
-			$values[] = "'".mysqli_real_escape_string($this->dbcon, $value)."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$values[] = $value[0];
+			else
+				$values[] = "'".mysqli_real_escape_string($this->dbcon, $value)."'";
 		}
 
 		$fields = implode(',', $fields);
@@ -71,10 +76,11 @@ class Kecik_MySqli {
 
 		while(list($pk, $value) = each($id)) {
 			$value = mysqli_real_escape_string($this->dbcon, $value);
+
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "`$pk`$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "`$pk`=$value";
 		}
 
 		$where = '';
@@ -82,11 +88,15 @@ class Kecik_MySqli {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "`$field`='".mysqli_real_escape_string($this->dbcon, $value)."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$fieldsValues[] = "`$field`=".$value[0];
+			else
+				$fieldsValues[] = "`$field`='".mysqli_real_escape_string($this->dbcon, $value)."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
 		$query = "UPDATE `$table` SET $fieldsValues $where";
+		
 		return $this->exec($query);
 	}
 
@@ -99,7 +109,7 @@ class Kecik_MySqli {
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "`$pk`$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "`$pk`=$value";
 		}
 
 		$where = '';
@@ -117,6 +127,7 @@ class Kecik_MySqli {
 			$ret = $this->fetch($res);
 		else
 			echo mysqli_error($this->dbcon);
+		
 		
 		return $ret;
 	}

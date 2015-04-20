@@ -30,8 +30,10 @@ class Kecik_PostgreSQL {
 
 	public function exec($sql) {
 		$res = pg_query($this->dbcon, $sql);
-		if (!$res)
+		if (!$res){
+			echo "<strong>Query: ".$sql."</strong><br />";
 			echo 'Query Error: '.pg_last_error($this->dbcon);
+		}
 
 		return $res;
 	}
@@ -60,7 +62,10 @@ class Kecik_PostgreSQL {
 
 		while (list($field, $value) = each($data)) {
 			$fields[] = $field;
-			$values[] = "'".$value."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$values[] = $value[0];
+			else
+				$values[] = "'".$value."'";
 		}
 
 		$fields = implode(',', $fields);
@@ -87,7 +92,10 @@ class Kecik_PostgreSQL {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "$field='".$value."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$fieldsValues[] = "#field=".$value[0];
+			else
+				$fieldsValues[] = "$field='".$value."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
@@ -120,7 +128,7 @@ class Kecik_PostgreSQL {
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
-		else
+		else 
 			echo pg_last_error($this->dbcon);
 		
 		return $ret;

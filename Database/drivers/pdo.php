@@ -29,6 +29,7 @@ class Kecik_PDO {
 		try {
 			$res = $this->dbcon->prepare($sql);
 		} catch (PDOException $e) {
+			echo "<strong>Query: ".$sql."</strong><br />";
 			echo 'Query Error: '.$e->getMessage();
 		}
 
@@ -53,8 +54,11 @@ class Kecik_PDO {
 		$fields = $values = array();
 
 		while (list($field, $value) = each($data)) {
-			$fields[] = "`$field`";
-			$values[] = "'".mysqli_real_escape_string($this->dbcon, $value)."'";
+			$fields[] = "$field";
+			if (is_array($value) && $value[1] == FALSE)
+				$values[] = $value[0]
+			else
+				$values[] = "'".addslashes($value)."'";
 		}
 
 		$fields = implode(',', $fields);
@@ -69,7 +73,7 @@ class Kecik_PDO {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = mysqli_real_escape_string($this->dbcon, $value);
+			$value = addslashes($value);
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "$pk$value";
 			else
@@ -81,11 +85,14 @@ class Kecik_PDO {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			$fieldsValues[] = "`$field`='".mysqli_real_escape_string($this->dbcon, $value)."'";
+			if (is_array($value) && $value[1] == FALSE)
+				$fieldsValues[] = "$field=".$value[0];
+			else
+				$fieldsValues[] = "$field='".addslashes($this->dbcon, $value)."'";
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
-		$query = "UPDATE `$table` SET $fieldsValues $where";
+		$query = "UPDATE $table SET $fieldsValues $where";
 		
 		return $this->dbcon->execute($query);
 	}
@@ -95,18 +102,18 @@ class Kecik_PDO {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = mysqli_real_escape_string($this->dbcon, $value);
+			$value = addslashes($value);
 			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+				$and[] = "$pk$value";
 			else
-				$and[] = "`$pk`='$value'";
+				$and[] = "$pk='$value'";
 		}
 
 		$where = '';
 		if (count($id) > 0)
 			$where = 'WHERE '.implode(' AND ', $and);
 
-		$query = "DELETE FROM `$table` $where";
+		$query = "DELETE FROM $table $where";
 		return $this->dbcon->execute($query);
 	}
 

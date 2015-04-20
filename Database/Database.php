@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/kecik_cookie
  * @license		MIT
- * @version 	1.0.1-alpha
+ * @version 	1.0.2
  * @package		Kecik\Database
  **/
 namespace Kecik;
