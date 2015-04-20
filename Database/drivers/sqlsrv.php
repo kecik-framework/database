@@ -8,7 +8,7 @@ class Kecik_MsSQL {
 
 	}
 
-	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
+	public function connect($dbname, $hostname='localhost', $username='root', $password='', $failover=FALSE) {
 		
 		$this->dbcon = sqlsrv_connect(
 		    $hostname,
@@ -16,11 +16,13 @@ class Kecik_MsSQL {
 		    $password
 		);
 		
-		if ( !$this->dbcon ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to MsSQL ");
+		if ($failover === FALSE) {
+			if ( !$this->dbcon ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to MsSQL ");
+			}
 		}
-
+		
 		mssql_select_db($dname, $this->dbcon);
 
 		return $this->dbcon;

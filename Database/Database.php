@@ -46,7 +46,7 @@ class Database {
 	 * @var array $dsnuser ID: Driver yang menggunakan dsn | EN: Driver use dsn
 	 **/
 	private $dsnuse = ['pdo', 'oci8', 'pgsql', 'mongo'];
-
+	private $failOver = [];
 	/**
  	 * __construct
  	 * @param Kecik $app
@@ -62,6 +62,8 @@ class Database {
 		$this->username = (!empty($config->get('database.username')))?$config->get('database.username'):'';
 		$this->password = (!empty($config->get('database.password')))?$config->get('database.password'):'';
 		$this->dbname = (!empty($config->get('database.dbname')))?$config->get('database.dbname'):'';
+
+		$this->failOver = (!empty($config->get('database.failover')) && is_array($config->get('database.failover')))?$config->get('database.failover'):[];
 	}
 
 	/**
@@ -70,17 +72,59 @@ class Database {
 	 **/
 	public function connect() {
 		
-
 		if (file_exists(dirname( __FILE__ )."/drivers/".$this->driver.".php")) {
 			$this->db = include_once("drivers/".$this->driver.".php");
+			$failover = (count($this->failOver) > 0)? TRUE:FALSE;
 
-			if (in_array($this->driver, ['sqlite', 'sqlite3']))
-				$this->db->connect($this->dbname);
-			elseif (in_array($this->driver, $this->dsnuse))
-				$this->db->connect($this->dsn, $this->dbname, $this->hostname, $this->username, $this->password);
-			else
-				$this->db->connect($this->dbname, $this->hostname, $this->username, $this->password);
+			$con = FALSE;
+			if (!isset($_SESSION['failover']) || empty($_SESSION['failover'])) {
+				if (in_array($this->driver, ['sqlite', 'sqlite3']))
+					$con = @$this->db->connect($this->dbname, $failover);
+				elseif (in_array($this->driver, $this->dsnuse))
+					$con = @$this->db->connect($this->dsn, $this->dbname, $this->hostname, $this->username, $this->password, $failover);
+				else
+					$con = @$this->db->connect($this->dbname, $this->hostname, $this->username, $this->password, $failover);
+			}
+
+			if (!$con && count($this->failOver) > 0) {
+				$fo = $this->failOver;
+				if (isset($_SESSION['failover']) && !empty($_SESSION['failover'])) {
+					$fo_id = base64_decode($_SESSION['failover']);
+					if (in_array($fo[$fo_id]['driver'], ['sqlite', 'sqlite3']))
+						$con = @$this->db->connect($fo[$fo_id]['dbname'], $failover);
+					elseif (in_array($fo[$fo_id]['driver'], $this->dsnuse))
+						$con = @$this->db->connect($fo[$fo_id]['dsn'], $fo[$fo_id]['dbname'], $fo[$fo_id]['hostname'], $fo[$fo_id]['username'], $fo[$fo_id]['password'], $failover);
+					else
+						$con = @$this->db->connect($fo[$fo_id]['dbname'], $fo[$fo_id]['hostname'], $fo[$fo_id]['username'], $fo[$fo_id]['password'], $failover);
+				} else {
+					while(list($id, $fo_config) = each($fo)) {
+						if (in_array($fo_config['driver'], ['sqlite', 'sqlite3']))
+							$con = @$this->db->connect($fo_config['dbname'], $failover);
+						elseif (in_array($fo_config['driver'], $this->dsnuse))
+							$con = @$this->db->connect($fo_config['dsn'], $fo_config['dbname'], $fo_config['hostname'], $fo_config['username'], $fo_config['password'], $failover);
+						else
+							$con = @$this->db->connect($fo_config['dbname'], $fo_config['hostname'], $fo_config['username'], $fo_config['password'], $failover);
+
+						if ($con) {
+							$_SESSION['failover'] = base64_encode($id);
+							break;
+						}
+					}
+
+				}
+
+				if (!$con) {
+					header('X-Error-Message: Fail Connecting', true, 500);
+					die('All Connecting Database Error');
+					$this->db = NULL;
+				}
+				return $this->db;
+			} else {
+				unset($_SESSION['failover']);
+			}
+
 			return $this->db;
+			
 		} else
 			throw new \Exception('Database Library: Unknown Driver');
 		

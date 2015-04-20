@@ -10,7 +10,7 @@ class Kecik_PDO {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='') {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE) {
 		$driver = explode(':', $dsn);
 		$this->driver = $driver[0];
 		unset($driver);
@@ -18,8 +18,10 @@ class Kecik_PDO {
 		try {
 			$this->dbcon = new PDO($dsn, $username, $password);
 		} catch (PDOException $e) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to $dsn: " . $e->getMessage());
+			if ($failover === FALSE) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to $dsn: " . $e->getMessage());
+			}
 		}
 
 		return $this->dbcon;

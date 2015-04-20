@@ -10,7 +10,7 @@ class Kecik_Oci8 {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='') {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE) {
 		
 		$this->dbcon = @oci_connect(
 		    $username,
@@ -18,12 +18,14 @@ class Kecik_Oci8 {
 		    $dsn
 		);
 
-		if ( !$this->dbcon ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    $e = oci_error();
-    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+		if ($failover === FALSE) {
+			if ( !$this->dbcon ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    $e = oci_error();
+	    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+			}
 		}
-
+		
 		$this->username = $username;
 		return $this->dbcon;
 	}

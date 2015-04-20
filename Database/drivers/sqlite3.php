@@ -9,15 +9,17 @@ class Kecik_SQLite3 extends SQLite3 {
 
 	}
 
-	public function connect($dbname) {
+	public function connect($dbname, $failover=FALSE) {
 		$mode = '0666';
 		$this->dbcon = new SQLite3($dbname);
 
-		if ( $this->dbcon->lastErrorMsg() ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to Sqlite: " . $this->dbcon->lastErrorMsg());
+		if ($failover === FALSE) {
+			if ( $this->dbcon->lastErrorMsg() ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to Sqlite: " . $this->dbcon->lastErrorMsg());
+			}
 		}
-
+		
 		return $this->dbcon;
 	}
 

@@ -8,7 +8,7 @@ class Kecik_PostgreSQL {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='') {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE) {
 		$hostname = (empty($hostname))?'':"host=$hostname";
 		$username = (empty($username))?'':"user=$username";
 		$password = (empty($password))?'':"password=$password";
@@ -20,11 +20,13 @@ class Kecik_PostgreSQL {
 
 		$this->dbcon = @pg_connect($conn_string);
 		
-		if ( !$this->dbcon ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to PostgreSQL");
+		if ($failover === FALSE) {
+			if ( !$this->dbcon ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to PostgreSQL");
+			}
 		}
-
+		
 		return $this->dbcon;
 	}
 

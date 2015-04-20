@@ -10,7 +10,7 @@ class Kecik_Mongo {
 
 	}
 
-	public function connect($dsn, $dbname, $hostname='mongodb://localhost:27017', $username='', $password='') {
+	public function connect($dsn, $dbname, $hostname='mongodb://localhost:27017', $username='', $password='', $failover=FALSE) {
 		$con_string='';
 		if (empty($dsn)) {
 			if (substr(strtolower($hostname), 0, 10) != 'mongodb://') $con_string= 'mongodb://'.$hostname;
@@ -23,11 +23,12 @@ class Kecik_Mongo {
 			
 		$this->dbcon = new MongoClient($con_string);
 		
-		if ( !$this->dbcon ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to MongoDB: ");
+		if ($failover === FALSE) {
+			if ( !$this->dbcon ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to MongoDB: ");
+			}
 		}
-
 
 		$this->db = $this->dbcon->selectDB($dbname);
 		return $this->dbcon;

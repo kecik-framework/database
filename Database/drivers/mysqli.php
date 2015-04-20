@@ -8,7 +8,7 @@ class Kecik_MySqli {
 
 	}
 
-	public function connect($dbname, $hostname='localhost', $username='root', $password='') {
+	public function connect($dbname, $hostname='localhost', $username='root', $password='', $failover=FALSE) {
 		$this->dbcon = @mysqli_connect(
 		    $hostname,
 		    $username,
@@ -16,9 +16,11 @@ class Kecik_MySqli {
 		    $dbname
 		);
 
-		if ( mysqli_connect_errno($this->dbcon) ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to MySQL: " . mysqli_connect_error());
+		if ($failover === FALSE) {
+			if ( mysqli_connect_errno($this->dbcon) ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to MySQL: " . mysqli_connect_error());
+			}
 		}
 
 		return $this->dbcon;
@@ -48,7 +50,8 @@ class Kecik_MySqli {
     }
 
 	public function __destruct() {
-		mysqli_close($this->dbcon);
+		if ($this->dbcon)
+			mysqli_close($this->dbcon);
 	}
 
 	public function insert($table, $data) {

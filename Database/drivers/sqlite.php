@@ -9,15 +9,17 @@ class Kecik_SQLite {
 
 	}
 
-	public function connect($dbname) {
+	public function connect($dbname, $failover=FALSE) {
 		$mode = '0666';
 		$this->dbcon = @sqlite_open($dbname, $mode, $error_connect);
 
-		if ( $error_connect ) {
-		    header('X-Error-Message: Fail Connecting', true, 500);
-		    die("Failed to connect to Sqlite: " . $error_connect);
+		if ($failover === FALSE) {
+			if ( $error_connect ) {
+			    header('X-Error-Message: Fail Connecting', true, 500);
+			    die("Failed to connect to Sqlite: " . $error_connect);
+			}
 		}
-
+		
 		return $this->dbcon;
 	}
 
