@@ -120,7 +120,8 @@ class Database {
 				}
 				return $this->db;
 			} else {
-				unset($_SESSION['failover']);
+				if (isset($_SESSION['failover']))
+					unset($_SESSION['failover']);
 			}
 
 			return $this->db;
