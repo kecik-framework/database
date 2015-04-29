@@ -56,14 +56,14 @@ class Database {
 
 		$config = $app->config;
 		
-		$this->dsn = (!empty($config->get('database.dsn')))?$config->get('database.dsn'):'';
-		$this->driver = (!empty($config->get('database.driver')))?strtolower($config->get('database.driver')):'';
-		$this->hostname = (!empty($config->get('database.hostname')))?$config->get('database.hostname'):'';
-		$this->username = (!empty($config->get('database.username')))?$config->get('database.username'):'';
-		$this->password = (!empty($config->get('database.password')))?$config->get('database.password'):'';
-		$this->dbname = (!empty($config->get('database.dbname')))?$config->get('database.dbname'):'';
+		$this->dsn = ($config->get('database.dsn') != '')?$config->get('database.dsn'):'';
+		$this->driver = ($config->get('database.driver') != '')?strtolower($config->get('database.driver')):'';
+		$this->hostname = ($config->get('database.hostname') != '')?$config->get('database.hostname'):'';
+		$this->username = ($config->get('database.username') != '')?$config->get('database.username'):'';
+		$this->password = ($config->get('database.password') != '')?$config->get('database.password'):'';
+		$this->dbname = ($config->get('database.dbname') != '')?$config->get('database.dbname'):'';
 
-		$this->failOver = (!empty($config->get('database.failover')) && is_array($config->get('database.failover')))?$config->get('database.failover'):[];
+		$this->failOver = ($config->get('database.failover') != '' && is_array($config->get('database.failover')))?$config->get('database.failover'):[];
 	}
 
 	/**
