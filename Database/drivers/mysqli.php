@@ -59,11 +59,22 @@ class Kecik_MySqli {
 		$fields = $values = array();
 
 		while (list($field, $value) = each($data)) {
-			$fields[] = "`$field`";
+			$field = explode('.', $field);
+			if (count($field) > 1)
+				$field = "`$field[0]`.`$field[1]`";
+			else
+				$field = "`$field[0]`";
+
+			$fields[] = $field;
 			if (is_array($value) && $value[1] == FALSE)
 				$values[] = $value[0];
-			else
-				$values[] = "'".mysqli_real_escape_string($this->dbcon, $value)."'";
+			else {
+				$value = mysqli_real_escape_string($this->dbcon, $value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+
+				$values[] = $value;
+			}
 		}
 
 		$fields = implode(',', $fields);
@@ -78,12 +89,24 @@ class Kecik_MySqli {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = mysqli_real_escape_string($this->dbcon, $value);
+			$pk = explode('.', $pk);
+			if (count($pk) > 1)
+				$pk = "`$pk[0]`.`$pk[1]`";
+			else
+				$pk = "`$pk[0]`";
+
+			if (is_array($value) && $value[1] == FALSE)
+				$value = $value[0];
+			else {
+				$value = mysqli_real_escape_string($this->dbcon, $value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+			}
 
 			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+				$and[] = "$pk$value";
 			else
-				$and[] = "`$pk`=$value";
+				$and[] = "$pk=$value";
 		}
 
 		$where = '';
@@ -91,10 +114,21 @@ class Kecik_MySqli {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		while (list($field, $value) = each($data)) {
-			if (is_array($value) && $value[1] == FALSE)
-				$fieldsValues[] = "`$field`=".$value[0];
+			$field = explode('.', $field);
+			if (count($field) > 1)
+				$field = "`$field[0]`.`$field[1]`";
 			else
-				$fieldsValues[] = "`$field`='".mysqli_real_escape_string($this->dbcon, $value)."'";
+				$field = "`$field[0]`";
+
+			if (is_array($value) && $value[1] == FALSE)
+				$fieldsValues[] = "$field=".$value[0];
+			else {
+				$value = mysqli_real_escape_string($this->dbcon, $value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+
+				$fieldsValues[] = "$field=".$value;
+			}
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
@@ -108,11 +142,24 @@ class Kecik_MySqli {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = mysqli_real_escape_string($this->dbcon, $value);
-			if (preg_match('/<|>|!=/', $value))
-				$and[] = "`$pk`$value";
+			$pk = explode('.', $pk);
+			if (count($pk) > 1)
+				$pk = "`$pk[0]`.`$pk[1]`";
 			else
-				$and[] = "`$pk`=$value";
+				$pk = "`$pk[0]`";
+
+			if (is_array($value) && $value[1] == FALSE)
+				$value = $value[0];
+			else {
+				$value = mysqli_real_escape_string($this->dbcon, $value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+			}
+
+			if (preg_match('/<|>|!=/', $value))
+				$and[] = "$pk$value";
+			else
+				$and[] = "$pk=$value";
 		}
 
 		$where = '';
@@ -143,19 +190,31 @@ class QueryHelper {
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $selectlist) = each($list)) {
 				while(list($id, $fields) = each($selectlist)) {
-					
 
 					if (is_int($id)) {
-						if (count($selectlist)>1)
-							$select[] = '`'.$fields.'`';
+						if (count($selectlist)>1){
+							$fields = explode('.', $fields);
+							if (count($fields) > 1)
+								$fields = "`$fields[0]`.`$fields[1]`";
+							else
+								$fields = "`$fields[0]`";
+
+							$select[] = $fields;
+						}
 						else
 							$select[] = $fields;
 
 					} elseif (is_string($fields)) {
-						if (strtoupper($id) != 'AS')
-							$select[] = strtoupper($id)."(`$fields`)";
+						$fields = explode('.', $fields);
+						if (count($fields) > 1)
+							$fields = "`$fields[0]`.`$fields[1]`";
 						else
-							$select[count($select)-1] .= " AS `$fields`";
+							$fields = "`$fields[0]`";
+
+						if (strtoupper($id) != 'AS')
+							$select[] = strtoupper($id)."($fields)";
+						else
+							$select[count($select)-1] .= " AS $fields";
 					}
 				}
 			}
@@ -214,10 +273,20 @@ class QueryHelper {
 									}
 								} else {
 									if ($id_step == 0) {
-										$condfield = '`'.$val.'`';
+										$val = explode('.', $val);
+										if (count($val) > 1)
+											$val = "`$val[0]`.`$val[1]`";
+										else
+											$val = "`$val[0]`";
+
+										$condfield = $val;
 										$id_step++;
 										continue;
 									} else {
+										$val = mysqli_real_escape_string($this->dbcon, $val);
+										if (!is_numeric($val))
+											$val = "'$val'";
+
 										$cond = $val;
 									}
 								}
@@ -237,7 +306,13 @@ class QueryHelper {
 									}
 								} else {
 									if ($id_step == 0) {
-										$condfield = '`'.$val.'`';
+										$val = explode('.', $val);
+										if (count($val) > 1)
+											$val = "`$val[0]`.`$val[1]`";
+										else
+											$val = "`$val[0]`";
+
+										$condfield = $val;
 										$id_step++;
 										continue;
 									} elseif($id_step == 1) {
@@ -255,6 +330,15 @@ class QueryHelper {
 											else
 												$val = '('.implode(', ', $val).')';
 										}
+
+										if (is_array($val) && $val[1] == FALSE)
+											$val = $val[0];
+										else {
+											$val = mysqli_real_escape_string($this->dbcon, $val);
+											if (!is_numeric($val))
+												$val = "'$val'";
+										}
+
 										$cond = $val;
 									}
 								}
@@ -368,6 +452,12 @@ class QueryHelper {
 		if (is_array($odr_by) && count($odr_by) > 0) {
 			$ord = ['asc'=>[], 'desc'=>[]];
 			while(list($sort, $fields) = each($odr_by)) {
+				$fields = explode('.', $fields);
+				if (count($fields) > 1)
+					$fields = "`$fields[0]`.`$fields[1]`";
+				else
+					$fields = "`$fields[0]`";
+
 				if (strtoupper($sort) == 'ASC') {
 					$ord['asc'][] = implode(', ', $fields).' ASC';
 				} elseif (strtoupper($sort) == 'DESC') {

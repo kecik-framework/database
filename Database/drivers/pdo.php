@@ -59,8 +59,13 @@ class Kecik_PDO {
 			$fields[] = "$field";
 			if (is_array($value) && $value[1] == FALSE)
 				$values[] = $value[0]
-			else
-				$values[] = "'".addslashes($value)."'";
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+
+				$values[] = $value;
+			}
 		}
 
 		$fields = implode(',', $fields);
@@ -75,11 +80,24 @@ class Kecik_PDO {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = addslashes($value);
+			$pk = explode('.', $pk);
+			if (count($pk) > 1)
+				$pk = "`$pk[0]`.`$pk[1]`";
+			else
+				$pk = "`$pk[0]`";
+
+			if (is_array($value) && $value[1] == FALSE)
+				$value = $value[0];
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+			}
+
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "$pk$value";
 			else
-				$and[] = "$pk='$value'";
+				$and[] = "$pk=$value";
 		}
 
 		$where = '';
@@ -89,8 +107,13 @@ class Kecik_PDO {
 		while (list($field, $value) = each($data)) {
 			if (is_array($value) && $value[1] == FALSE)
 				$fieldsValues[] = "$field=".$value[0];
-			else
-				$fieldsValues[] = "$field='".addslashes($this->dbcon, $value)."'";
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+
+				$fieldsValues[] = "$field=$value";
+			}
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
@@ -104,11 +127,24 @@ class Kecik_PDO {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = addslashes($value);
+			$pk = explode('.', $pk);
+			if (count($pk) > 1)
+				$pk = "`$pk[0]`.`$pk[1]`";
+			else
+				$pk = "`$pk[0]`";
+
+			if (is_array($value) && $value[1] == FALSE)
+				$value = $value[0];
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+			}
+
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "$pk$value";
 			else
-				$and[] = "$pk='$value'";
+				$and[] = "$pk=$value";
 		}
 
 		$where = '';
@@ -252,6 +288,15 @@ class QueryHelper {
 											else
 												$val = '('.implode(', ', $val).')';
 										}
+
+										if (is_array($val) && $val[1] == FALSE)
+											$val = $val[0];
+										else {
+											$val = addslashes($val);
+											if (!is_numeric($val))
+												$val = "'$val'";
+										}
+										
 										$cond = $val;
 									}
 								}

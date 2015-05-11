@@ -68,8 +68,13 @@ class Kecik_Oci8 {
 			$fields[] = $field;
 			if (is_array($value) && $value[1] == FALSE)
 				$values[] = $value[0];
-			else
-				$values[] = "'".$value."'";
+			else {
+				$value = addslashes($value);
+				if (is_numeric($value))
+					$value = "'$value'";
+
+				$values[] = $value;
+			}
 		}
 
 		$fields = implode(',', $fields);
@@ -84,11 +89,18 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $value;
+			if (is_array($value) && $value[1] == FALSE) 
+				$value = $value[0];
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+			}
+
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "$pk$value";
 			else
-				$and[] = "$pk='$value'";
+				$and[] = "$pk=$value";
 		}
 
 		$where = '';
@@ -98,8 +110,13 @@ class Kecik_Oci8 {
 		while (list($field, $value) = each($data)) {
 			if (is_array($value) && $value[1] == FALSE)
 				$fieldsValues[] = "$field=".$value[0];
-			else
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+
 				$fieldsValues[] = "$field='".$value."'";
+			}
 		}
 
 		$fieldsValues = implode(',', $fieldsValues);
@@ -112,11 +129,18 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			$value = $value;
+			if (is_array($value) && $value[1] == FALSE)
+				$value = $value[0];
+			else {
+				$value = addslashes($value);
+				if (!is_numeric($value))
+					$value = "'$value'";
+			}
+
 			if (preg_match('/<|>|!=/', $value))
 				$and[] = "$pk$value";
 			else
-				$and[] = "$pk='$value'";
+				$and[] = "$pk=$value";
 		}
 
 		$where = '';
@@ -219,7 +243,7 @@ class QueryHelper {
 									}
 								} else {
 									if ($id_step == 0) {
-										$condfield = ''.$val.'';
+										$condfield = $val;
 										$id_step++;
 										continue;
 									} else {
@@ -242,7 +266,7 @@ class QueryHelper {
 									}
 								} else {
 									if ($id_step == 0) {
-										$condfield = ''.$val.'';
+										$condfield = $val;
 										$id_step++;
 										continue;
 									} elseif($id_step == 1) {
@@ -261,6 +285,15 @@ class QueryHelper {
 											else
 												$val = '('.implode(', ', $val).')';
 										}
+
+										if (is_array($val) && $val[1] == FALSE)
+											$val = $val[0];
+										else {
+											$val = addslashes($val);
+											if (!is_numeric($val))
+												$val = "'$val'";
+										}
+
 										$cond = $val;
 									}
 								}
