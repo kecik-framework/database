@@ -1,4 +1,14 @@
 <?php
+/**
+ * Driver Oracle
+ *
+ * @author 		Dony Wahyu Isp
+ * @copyright 	2015 Dony Wahyu Isp
+ * @link 		http://github.io/database
+ * @license		MIT
+ * @version 	1.0.3
+ * @package		Oracle
+ **/
 class Kecik_Oci8 {
 	private $dbcon=NULL;
 

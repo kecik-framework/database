@@ -1,4 +1,14 @@
 <?php
+/**
+ * Driver PDO
+ *
+ * @author 		Dony Wahyu Isp
+ * @copyright 	2015 Dony Wahyu Isp
+ * @link 		http://github.io/database
+ * @license		MIT
+ * @version 	1.0.3
+ * @package		PDO
+ **/
 class Kecik_PDO {
 	private $dbcon=NULL;
 
@@ -296,7 +306,7 @@ class QueryHelper {
 											if (!is_numeric($val))
 												$val = "'$val'";
 										}
-										
+
 										$cond = $val;
 									}
 								}

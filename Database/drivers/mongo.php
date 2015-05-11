@@ -1,4 +1,14 @@
 <?php
+/**
+* Driver MongoDB
+ *
+ * @author 		Dony Wahyu Isp
+ * @copyright 	2015 Dony Wahyu Isp
+ * @link 		http://github.io/database
+ * @license		MIT
+ * @version 	1.0.3
+ * @package		MongoDB
+ **/
 class Kecik_Mongo {
 	private $dbcon=NULL;
 

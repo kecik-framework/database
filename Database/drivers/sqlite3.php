@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * Driver SQLite3
+ *
+ * @author 		Dony Wahyu Isp
+ * @copyright 	2015 Dony Wahyu Isp
+ * @link 		http://github.io/database
+ * @license		MIT
+ * @version 	1.0.3
+ * @package		SQLite3
+ **/
 class Kecik_SQLite3 extends SQLite3 {
 	private $dbcon=NULL;
 

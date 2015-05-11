@@ -1,10 +1,10 @@
 <?php
 /**
- * Cookie - Library untuk framework kecik, library ini khusus untuk membantu masalah Cookie 
+ * Cookie - Library untuk framework kecik, library ini khusus untuk membantu masalah Database
  *
  * @author 		Dony Wahyu Isp
  * @copyright 	2015 Dony Wahyu Isp
- * @link 		http://github.io/kecik_cookie
+ * @link 		http://github.io/database
  * @license		MIT
  * @version 	1.0.2
  * @package		Kecik\Database

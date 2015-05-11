@@ -1,4 +1,14 @@
 <?php
+/**
+ * Driver MySQLi
+ *
+ * @author 		Dony Wahyu Isp
+ * @copyright 	2015 Dony Wahyu Isp
+ * @link 		http://github.io/database
+ * @license		MIT
+ * @version 	1.0.3
+ * @package		MySQLi
+ **/
 class Kecik_MySqli {
 	private $dbcon=NULL;
 
@@ -452,12 +462,6 @@ class QueryHelper {
 		if (is_array($odr_by) && count($odr_by) > 0) {
 			$ord = ['asc'=>[], 'desc'=>[]];
 			while(list($sort, $fields) = each($odr_by)) {
-				$fields = explode('.', $fields);
-				if (count($fields) > 1)
-					$fields = "`$fields[0]`.`$fields[1]`";
-				else
-					$fields = "`$fields[0]`";
-
 				if (strtoupper($sort) == 'ASC') {
 					$ord['asc'][] = implode(', ', $fields).' ASC';
 				} elseif (strtoupper($sort) == 'DESC') {
