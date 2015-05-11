@@ -182,7 +182,7 @@ class Kecik_MySqli {
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
 		else
@@ -235,7 +235,7 @@ class QueryHelper {
 		return (!isset($ret))?' * ':$ret;
 	}
 
-	public static function where($list, $group='and', $idx_where=1, $group_prev='') {
+	public static function where($dbcon, $list, $group='and', $idx_where=1, $group_prev='') {
 		$ret = '';
 		$where = ['and'=>[], 'or'=>[]];
 		$opt = ['and', 'or'];
@@ -247,7 +247,7 @@ class QueryHelper {
 				
 				//sub operator
 				if ( is_string($idx) && in_array($idx, $opt)) {
-					$where[$idx][] .= '('.self::where($wherelist, $idx, $idx_where+1, $idx).')';
+					$where[$idx][] .= '('.self::where($dbcon, $wherelist, $idx, $idx_where+1, $idx).')';
 					$optrow[] = $idx;
 				//logical
 				} elseif (is_array($wherelist)) {
@@ -293,7 +293,7 @@ class QueryHelper {
 										$id_step++;
 										continue;
 									} else {
-										$val = mysqli_real_escape_string($this->dbcon, $val);
+										$val = mysqli_real_escape_string($dbcon, $val);
 										if (!is_numeric($val))
 											$val = "'$val'";
 
@@ -344,7 +344,7 @@ class QueryHelper {
 										if (is_array($val) && $val[1] == FALSE)
 											$val = $val[0];
 										else {
-											$val = mysqli_real_escape_string($this->dbcon, $val);
+											$val = mysqli_real_escape_string($dbcon, $val);
 											if (!is_numeric($val))
 												$val = "'$val'";
 										}
@@ -414,7 +414,7 @@ class QueryHelper {
 		return $ret;
 	}
 
-	public static function find($table, $filter=array(), $lmt=array(), $odr_by=array()) {
+	public static function find($dbcon, $table, $filter=array(), $lmt=array(), $odr_by=array()) {
 		$select = '';
 		$from = "FROM `$table`";
 		$where = '';
@@ -433,7 +433,7 @@ class QueryHelper {
 					break;
 					
 					case 'WHERE':
-						$where = self::where($query);
+						$where = self::where($dbcon, $query);
 					break;
 
 					case 'JOIN':
