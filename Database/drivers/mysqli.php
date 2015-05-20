@@ -378,6 +378,38 @@ class QueryHelper {
 		return $ret;
 	}
 
+	public static function group_by($dbcon, $list) {
+		$ret = '';
+		$group_by = [];
+		
+		if (is_array($list) && count($list) > 0) {
+			while(list($idx, $group_bylist) = each($list)) {
+				while(list($id, $fields) = each($group_bylist)) {
+
+					if (is_int($id)) {
+						if (count($group_bylist)>1){
+							$fields = explode('.', $fields);
+							if (count($fields) > 1)
+								$fields = "`$fields[0]`.`$fields[1]`";
+							else
+								$fields = "`$fields[0]`";
+
+							$group_by[] = $fields;
+						}
+						else
+							$group_by[] = $fields;
+
+					} 
+
+				}
+			}
+			
+			$ret = ' GROUP BY '.implode(', ', $group_by).' ';
+		}
+
+		return $ret;
+	}
+
 	public static function join($table, $list) {
 		$ret = '';
 		$join = [];
@@ -416,6 +448,7 @@ class QueryHelper {
 		$select = '';
 		$from = "FROM `$table`";
 		$where = '';
+		$group_by = '';
 		$limit = '';
 		$order_by = '';
 		$union = '';
@@ -432,6 +465,10 @@ class QueryHelper {
 					
 					case 'WHERE':
 						$where = self::where($dbcon, $query);
+					break;
+
+					case 'GROUP BY':
+						$group_by = self::group_by($dbcon, $query);
 					break;
 
 					case 'JOIN':
@@ -483,7 +520,7 @@ class QueryHelper {
 
 
 		$select = (empty($select))? '* ':$select;
-		$sql = 'SELECT '.$select.$from.$where.$order_by.$limit.$union;
+		$sql = 'SELECT '.$select.$from.$where.$group_by.$order_by.$limit.$union;
 
 		return $sql;
 	}
