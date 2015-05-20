@@ -337,13 +337,11 @@ class QueryHelper {
 										if (is_array($val)) {
 											if (trim($condopt) == 'BETWEEN')
 												$val = implode(' AND ', $val);
+											elseif (is_array($val) && $val[1] == FALSE)
+												$val = $val[0];
 											else
 												$val = '('.implode(', ', $val).')';
-										}
-
-										if (is_array($val) && $val[1] == FALSE)
-											$val = $val[0];
-										else {
+										} else {
 											$val = mysqli_real_escape_string($dbcon, $val);
 											if (!is_numeric($val))
 												$val = "'$val'";
