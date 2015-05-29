@@ -18,7 +18,7 @@ class Kecik_MySqli {
 
 	}
 
-	public function connect($dbname, $hostname='localhost', $username='root', $password='', $failover=FALSE) {
+	public function connect($dbname, $hostname='localhost', $username='root', $password='', $failover=FALSE, $charset='utf8') {
 		$this->dbcon = @mysqli_connect(
 		    $hostname,
 		    $username,
@@ -32,7 +32,10 @@ class Kecik_MySqli {
 			    die("Failed to connect to MySQL: " . mysqli_connect_error());
 			}
 		}
-
+        
+        if (empty($charset)) $charset = 'utf8';
+        
+        mysqli_set_charset($this->dbcon, $charset );
 		return $this->dbcon;
 	}
 
@@ -46,9 +49,27 @@ class Kecik_MySqli {
 		return $res;
 	}
 
-	public function fetch($res) {
+	public function fetch($res, $callback=null) {
 		$result = array();
+        
+        $callback_is = 0;
+        if (is_callable($callback))
+            $callback_is = 1;
+        elseif (is_array($callback))
+            $callback_is = 2;
+        
 		while( $data = mysqli_fetch_object($res) ) {
+            if ($callback_is  == 1) {
+                while(list($field, $value) = each($data)) {
+                    $data->$field = $callback($data->$field, $data);
+                }
+            } elseif ($callback_is == 2) {
+                while(list($field, $func) = each($data)) {
+                    if (isset($data->$field))
+                        $data->$field = $func($data->$field, $data);
+                }
+            }
+            
 			$result[] = $data;
 		}
 
@@ -182,9 +203,14 @@ class Kecik_MySqli {
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
+        $callback = null;
+        if (isset($condition['callback'])) {
+            $callback = $condition['callback'];
+            unset($condition['callback']);
+        }
 		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query))
-			$ret = $this->fetch($res);
+			$ret = $this->fetch($res, $callback);
 		else
 			echo mysqli_error($this->dbcon);
 		

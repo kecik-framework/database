@@ -20,7 +20,7 @@ class Kecik_Mongo {
 
 	}
 
-	public function connect($dsn, $dbname, $hostname='mongodb://localhost:27017', $username='', $password='', $failover=FALSE) {
+	public function connect($dsn, $dbname, $hostname='mongodb://localhost:27017', $username='', $password='', $failover=FALSE, $charset='utf8') {
 		$con_string='';
 		if (empty($dsn)) {
 			if (substr(strtolower($hostname), 0, 10) != 'mongodb://') $con_string= 'mongodb://'.$hostname;
@@ -55,11 +55,28 @@ class Kecik_Mongo {
 		return $res;
 	}
 
-	public function fetch($res) {
+	public function fetch($res, $callback=null) {
 		$res = $this->db->execute($this->lastSQL.'.toArray()');
 		$this->lastSQL = '';
+		$callback_is = 0;
+        if (is_callable($callback))
+            $callback_is = 1;
+        elseif (is_array($callback))
+            $callback_is = 2;
+
 		$result = array();
 		foreach ($res['retval'] as $data) {
+			if ($callback_is  == 1) {
+                while(list($field, $value) = each($data)) {
+                    $data->$field = $callback($data->$field, $data);
+                }
+            } elseif ($callback_is == 2) {
+                while(list($field, $func) = each($data)) {
+                    if (isset($data->$field))
+                        $data->$field = $func($data->$field, $data);
+                }
+            }
+
 			$result[] = (object) $data;
 		}
 		return $result;
@@ -86,9 +103,14 @@ class Kecik_Mongo {
 	}
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
+		$callback = null;
+        if (isset($condition['callback'])) {
+            $callback = $condition['callback'];
+            unset($condition['callback']);
+        }
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		$res = $this->exec($query);
-		return $this->fetch($res);
+		return $this->fetch($res, $callback);
 	}
 }
 

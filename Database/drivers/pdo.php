@@ -20,7 +20,7 @@ class Kecik_PDO {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE) {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='utf8') {
 		$driver = explode(':', $dsn);
 		$this->driver = $driver[0];
 		unset($driver);
@@ -39,7 +39,7 @@ class Kecik_PDO {
 
 	public function exec($sql) {
 		try {
-			$res = $this->dbcon->prepare($sql);
+			$res = $this->dbcon->query($sql);
 		} catch (PDOException $e) {
 			echo "<strong>Query: ".$sql."</strong><br />";
 			echo 'Query Error: '.$e->getMessage();
@@ -48,9 +48,36 @@ class Kecik_PDO {
 		return $res;
 	}
 
-	public function fetch($res) {
-		$res->execute();
-		return $res->fetchAll(PDO::FETCH_OBJ);
+	public function fetch($res, $callback=null) {
+		//$res->execute();
+		if ($callback == NULL)
+			return $res->fetchAll(PDO::FETCH_OBJ);
+		else {
+			$callback_is = 0;
+	        if (is_callable($callback))
+	            $callback_is = 1;
+	        elseif (is_array($callback))
+            $callback_is = 2;
+
+        	$result = array();
+        	$rows = $res->fetchAll(PDO::FETCH_OBJ);
+        	foreach($rows as $data) {
+        		if ($callback_is  == 1) {
+	                while(list($field, $value) = each($data)) {
+	                    $data->$field = $callback($data->$field, $data);
+	                }
+	            } elseif ($callback_is == 2) {
+	                while(list($field, $func) = each($data)) {
+	                    if (isset($data->$field))
+	                        $data->$field = $func($data->$field, $data);
+	                }
+	            }
+	            
+				$result[] = (object) $data;
+        	}
+
+        	return $result;
+		}
 	}
 
 	public function affected() {
@@ -68,7 +95,7 @@ class Kecik_PDO {
 		while (list($field, $value) = each($data)) {
 			$fields[] = "$field";
 			if (is_array($value) && $value[1] == FALSE)
-				$values[] = $value[0]
+				$values[] = $value[0];
 			else {
 				$value = addslashes($value);
 				if (!is_numeric($value))
@@ -167,10 +194,15 @@ class Kecik_PDO {
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
+		$callback = null;
+        if (isset($condition['callback'])) {
+            $callback = $condition['callback'];
+            unset($condition['callback']);
+        }
 		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
 		try {
 			$res = $this->exec($query);
-			$ret = $this->fetch($res);
+			$ret = $this->fetch($res, $callback);
 		} catch(PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -497,8 +529,7 @@ class QueryHelper {
 			if (!empty($limit))
 				$sql = str_replace(':sql:', $sql, $limit);
 		}
-
-		echo $sql;
+        
 		return $sql;
 	}
 

@@ -20,7 +20,7 @@ class Kecik_Oci8 {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE) {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='utf8') {
 		
 		$this->dbcon = @oci_connect(
 		    $username,
@@ -53,8 +53,25 @@ class Kecik_Oci8 {
 	}
 
 	public function fetch($stid) {
+		$callback_is = 0;
+        if (is_callable($callback))
+            $callback_is = 1;
+        elseif (is_array($callback))
+            $callback_is = 2;
+
 		$result = array();
 		while (($data = oci_fetch_object($stid)) != false) {
+			if ($callback_is  == 1) {
+                while(list($field, $value) = each($data)) {
+                    $data->$field = $callback($data->$field, $data);
+                }
+            } elseif ($callback_is == 2) {
+                while(list($field, $func) = each($data)) {
+                    if (isset($data->$field))
+                        $data->$field = $func($data->$field, $data);
+                }
+            }
+
 			$result[] = $data;
 		}
 
@@ -163,9 +180,14 @@ class Kecik_Oci8 {
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
+		$callback = null;
+        if (isset($condition['callback'])) {
+            $callback = $condition['callback'];
+            unset($condition['callback']);
+        }
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query))
-			$ret = $this->fetch($res);
+			$ret = $this->fetch($res, $callback);
 		else {
 			$e = oci_error();
     		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);

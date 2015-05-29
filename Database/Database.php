@@ -62,6 +62,7 @@ class Database {
 		$this->username = ($config->get('database.username') != '')?$config->get('database.username'):'';
 		$this->password = ($config->get('database.password') != '')?$config->get('database.password'):'';
 		$this->dbname = ($config->get('database.dbname') != '')?$config->get('database.dbname'):'';
+		$this->charset = ($config->get('database.charset') != '')?$config->get('database.charset'):'';
 
 		$this->failOver = ($config->get('database.failover') != '' && is_array($config->get('database.failover')))?$config->get('database.failover'):[];
 	}
@@ -83,7 +84,7 @@ class Database {
 				elseif (in_array($this->driver, $this->dsnuse))
 					$con = @$this->db->connect($this->dsn, $this->dbname, $this->hostname, $this->username, $this->password, $failover);
 				else
-					$con = @$this->db->connect($this->dbname, $this->hostname, $this->username, $this->password, $failover);
+					$con = @$this->db->connect($this->dbname, $this->hostname, $this->username, $this->password, $failover, $this->charset);
 			}
 
 			if (!$con && count($this->failOver) > 0) {
