@@ -14,6 +14,10 @@ class Kecik_MySqli {
 
 	private $_select = '';
 
+	private $_fields = '';
+
+	private $_num_rows = 0;
+
 	public function __construct() {
 
 	}
@@ -27,23 +31,23 @@ class Kecik_MySqli {
 		);
 
 		if ($failover === FALSE) {
-			if ( mysqli_connect_errno($this->dbcon) ) {
+			if ( ($this->dbcon->connect_errno) ) {
 			    header('X-Error-Message: Fail Connecting', true, 500);
-			    die("Failed to connect to MySQL: " . mysqli_connect_error());
+			    die("Failed to connect to MySQL: " . $this->dbcon->connect_errno);
 			}
 		}
         
         if (empty($charset)) $charset = 'utf8';
         
-        mysqli_set_charset($this->dbcon, $charset );
+        $this->dbcon->set_charset($charset );
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
-		$res = mysqli_query($this->dbcon, $sql);
+		$res = $this->dbcon->query($sql);
 		if (!$res){
 			echo "<strong>Query: ".$sql."</strong><br />";
-			echo 'Query Error: '.mysqli_error($this->dbcon);
+			echo 'Query Error: '.$this->dbcon->error;
 		}
 
 		return $res;
@@ -57,8 +61,9 @@ class Kecik_MySqli {
             $callback_is = 1;
         elseif (is_array($callback))
             $callback_is = 2;
-        
-		while( $data = mysqli_fetch_object($res) ) {
+
+        $this->_num_rows = $res->num_rows;
+		while( $data = $res->fetch_object() ) {
             if ($callback_is  == 1) {
                 while(list($field, $value) = each($data)) {
                     $data->$field = $callback($data->$field, $data);
@@ -74,16 +79,18 @@ class Kecik_MySqli {
 			$result[] = $data;
 		}
 
+		$res->close();
+		
 		return $result;
 	}
 
 	public function affected() {
-        return mysqli_affected_rows($this->dbcon);
+        return $this->dbcon->affected_rows();
     }
 
 	public function __destruct() {
 		if ($this->dbcon)
-			mysqli_close($this->dbcon);
+			$this->dbcon->close();
 	}
 
 	public function insert($table, $data) {
@@ -101,7 +108,7 @@ class Kecik_MySqli {
 			if (is_array($value) && $value[1] == FALSE)
 				$values[] = $value[0];
 			else {
-				$value = mysqli_real_escape_string($this->dbcon, $value);
+				$value = $this->dbcon->real_escape_string($value);
 				if (!is_numeric($value))
 					$value = "'$value'";
 
@@ -130,7 +137,7 @@ class Kecik_MySqli {
 			if (is_array($value) && $value[1] == FALSE)
 				$value = $value[0];
 			else {
-				$value = mysqli_real_escape_string($this->dbcon, $value);
+				$value = $this->dbcon->real_escape_string($value);
 				if (!is_numeric($value))
 					$value = "'$value'";
 			}
@@ -155,7 +162,7 @@ class Kecik_MySqli {
 			if (is_array($value) && $value[1] == FALSE)
 				$fieldsValues[] = "$field=".$value[0];
 			else {
-				$value = mysqli_real_escape_string($this->dbcon, $value);
+				$value = $this->dbcon->real_escape_string($value);
 				if (!is_numeric($value))
 					$value = "'$value'";
 
@@ -183,7 +190,7 @@ class Kecik_MySqli {
 			if (is_array($value) && $value[1] == FALSE)
 				$value = $value[0];
 			else {
-				$value = mysqli_real_escape_string($this->dbcon, $value);
+				$value = $this->dbcon->real_escape_string($value);
 				if (!is_numeric($value))
 					$value = "'$value'";
 			}
@@ -205,18 +212,54 @@ class Kecik_MySqli {
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
         $callback = null;
+        $this->_fields = null;
+        $this->_num_rows = 0;
         if (isset($condition['callback'])) {
             $callback = $condition['callback'];
             unset($condition['callback']);
         }
 		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
-		if ($res = $this->exec($query))
+		if ($res = $this->exec($query)) {
+			$fields = $res->fetch_fields();
+			foreach ($fields as $field) {
+				$this->_fields[] = (object) array(
+					'name' => $field->name,
+					'type' => $field->type,
+					'size' => $field->max_length,
+					'table' => $field->table
+				);
+			}
 			$ret = $this->fetch($res, $callback);
-		else
-			echo mysqli_error($this->dbcon);
+		} else
+			echo $this->dbcon->error;
 		
 		
 		return $ret;
+	}
+
+	public function fields($table) {
+		if (empty($this->_fields)) {
+			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			if ($res = $this->exec($query)) {
+				$fields = $res->fetch_fields();
+				foreach ($fields as $field) {
+					$this->_fields[] = (object) array(
+						'name' => $field->name,
+						'type' => $field->type,
+						'size' => $field->max_length,
+						'table' => $field->table
+					);
+				}
+				$res->close();
+			} else
+				echo $this->dbcon->error;
+		} 
+			
+		return $this->_fields;
+	}
+
+	public function num_rows() {
+		return $this->_num_rows;
 	}
 }
 

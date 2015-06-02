@@ -16,6 +16,11 @@ class Kecik_Mongo {
 	private $_select = '';
 
 	private $lastSQL = '';
+
+	private $_fields = '';
+
+	private $_num_rows = 0;
+
 	public function __construct() {
 
 	}
@@ -113,6 +118,23 @@ class Kecik_Mongo {
 		$res = $this->exec($query);
 		return $this->fetch($res, $callback);
 	}
+
+	public function fields($table) {
+		if (empty($this->_fields)) {
+			$query = QueryHelper::find($table, array(), array(1), array());
+			if ($res = $this->exec($query)) {
+				
+			} else
+				echo $this->dbcon->error;
+		} 
+			
+		return $this->_fields;
+	}
+
+	public function num_rows() {
+		return $this->_num_rows;
+	}
+
 }
 
 class QueryHelper {

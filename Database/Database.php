@@ -220,8 +220,17 @@ class Database {
 		return $this->db->find($table, $condition, $limit, $order_by);
 	}
 
+	public function fields() {
+		$table = (!empty($this->table))?$this->table:$table;
 
+		return $this->db->fields($table);
+	}
+
+	public function num_rows() {
+		return $this->db->num_rows();
+	}
 	public function __destruct() {
 		unset($this->db);
 	}
+
 }

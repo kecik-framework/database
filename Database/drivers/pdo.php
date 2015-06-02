@@ -16,17 +16,21 @@ class Kecik_PDO {
 
 	private $driver;
 
+	private $_fields = '';
+
+	private $_num_rows = 0;
+
 	public function __construct() {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='utf8') {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='UTF8') {
 		$driver = explode(':', $dsn);
 		$this->driver = $driver[0];
 		unset($driver);
 
 		try {
-			$this->dbcon = new PDO($dsn, $username, $password);
+			$this->dbcon = new PDO($dsn, $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \''.$charset.'\''));
 		} catch (PDOException $e) {
 			if ($failover === FALSE) {
 			    header('X-Error-Message: Fail Connecting', true, 500);
@@ -60,6 +64,7 @@ class Kecik_PDO {
             $callback_is = 2;
 
         	$result = array();
+        	$this->_num_rows = $res->rowCount();
         	$rows = $res->fetchAll(PDO::FETCH_OBJ);
         	foreach($rows as $data) {
         		if ($callback_is  == 1) {
@@ -203,6 +208,18 @@ class Kecik_PDO {
 		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
 		try {
 			$res = $this->exec($query);
+			$nfields = $res->columnCount();
+			$fields = array();
+			for ($i=0; $i<$nfields; $i++) {
+				$field = $res->getColumnMeta($i);
+				$fields[] = (object) array(
+					'name' => $field['name'],
+					'type' => $field['native_type'],
+					'size' => $field['len'],
+					'table' => $field['table']
+				);
+			}
+			$this->_fields = $fields;
 			$ret = $this->fetch($res, $callback);
 		} catch(PDOException $e) {
 			echo $e->getMessage();
@@ -210,6 +227,34 @@ class Kecik_PDO {
 		
 		return $ret;
 	}
+
+	public function fields($table) {
+		if (empty($this->_fields)) {
+			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			if ($res = $this->exec($query)) {
+				$nfields = $res->columnCount();
+				$fields = array();
+				for ($i=0; $i<$nfields; $i++) {
+					$field = $res->getColumnMeta($i);
+					$fields[] = (object) array(
+						'name' => $field['name'],
+						'type' => $field['native_type'],
+						'size' => $field['len'],
+						'table' => $field['table']
+					);
+				}
+				$this->_fields = $fields;
+			} else
+				echo $this->dbcon->error;
+		} 
+			
+		return $this->_fields;
+	}
+
+	public function num_rows() {
+		return $this->_num_rows;
+	}
+
 }
 
 class QueryHelper {

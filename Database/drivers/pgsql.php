@@ -14,17 +14,21 @@ class Kecik_PostgreSQL {
 
 	private $_select = '';
 
+	private $_fields = '';
+
+	private $_num_rows = 0;
+
 	public function __construct() {
 
 	}
 
-	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='utf8') {
+	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='UTF8') {
 		$hostname = (empty($hostname))?'':"host=$hostname";
 		$username = (empty($username))?'':"user=$username";
 		$password = (empty($password))?'':"password=$password";
 		$dbname   = (empty($dbname))?'':"dbname=$dbname";
 		if (empty($dsn))
-			$conn_string = "$hostname port=5432 $dbname $username $password options='--client_encoding=UTF8'";
+			$conn_string = "$hostname port=5432 $dbname $username $password options='--client_encoding=$chartset'";
 		else
 			$conn_string = $dsn;
 
@@ -58,6 +62,7 @@ class Kecik_PostgreSQL {
             $callback_is = 2;
 
 		$result = array();
+		$this->_num_rows = pg_num_rows($res);
 		while( $data = pg_fetch_object($res) ) {
 			if ($callback_is  == 1) {
                 while(list($field, $value) = each($data)) {
@@ -73,6 +78,8 @@ class Kecik_PostgreSQL {
 
 			$result[] = $data;
 		}
+
+		pg_free_result($res);
 
 		return $result;
 	}
@@ -182,18 +189,62 @@ class Kecik_PostgreSQL {
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$ret = array();
 		$callback = null;
+		$this->_fields = null;
+        $this->_num_rows = 0;
         if (isset($condition['callback'])) {
             $callback = $condition['callback'];
             unset($condition['callback']);
         }
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
-		if ($res = $this->exec($query))
+		if ($res = $this->exec($query)){
+			$nfields = pg_field_num($res);
+			$fields = array();
+			for ($i=0; $i<$nfields; $i++) {
+				$field = $res->getColumnMeta($i);
+				$fields[] = (object) array(
+					'name' => pg_field_name($res , $i),
+					'type' => pg_field_type($res , $i),
+					'size' => pg_field_size($res, $i),
+					'table' => pg_field_table($res, $i)
+				);
+			}
+			$this->_fields = $fields;
 			$ret = $this->fetch($res, $callback);
+		}
 		else 
 			echo pg_last_error($this->dbcon);
 		
 		return $ret;
 	}
+
+	public function fields($table) {
+		if (empty($this->_fields)) {
+			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			if ($res = $this->exec($query)) {
+				$nfields = pg_field_num($res);
+				$fields = array();
+				for ($i=0; $i<$nfields; $i++) {
+					$field = $res->getColumnMeta($i);
+					$fields[] = (object) array(
+						'name' => pg_field_name($res , $i),
+						'type' => pg_field_type($res , $i),
+						'size' => pg_field_size($res, $i),
+						'table' => pg_field_table($res, $i)
+					);
+				}
+				$this->_fields = $fields;
+				pg_free_result($res);
+			} else
+				echo $this->dbcon->error;
+		} 
+			
+		return $this->_fields;
+	}
+
+	public function num_rows() {
+		return $this->_num_rows;
+	}
+
 }
 
 class QueryHelper {

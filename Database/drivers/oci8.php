@@ -16,6 +16,10 @@ class Kecik_Oci8 {
 
 	private $username;
 
+	private $_fields = '';
+
+	private $_num_rows = 0;
+
 	public function __construct() {
 
 	}
@@ -60,6 +64,7 @@ class Kecik_Oci8 {
             $callback_is = 2;
 
 		$result = array();
+		$this->_num_rows = oci_num_rows($res);
 		while (($data = oci_fetch_object($stid)) != false) {
 			if ($callback_is  == 1) {
                 while(list($field, $value) = each($data)) {
@@ -76,6 +81,7 @@ class Kecik_Oci8 {
 			$result[] = $data;
 		}
 
+		oci_free_statement($stid);
 		return $result;
 	}
 
@@ -187,15 +193,56 @@ class Kecik_Oci8 {
             unset($condition['callback']);
         }
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
-		if ($res = $this->exec($query))
+		if ($res = $this->exec($query)) {
+			$nfields = oci_num_fields($res);
+			$fields = array();
+			for ($i=1; $i<=$nfields; $i++) {
+				$fields[] = (object) array(
+					'name' => oci_field_name($res, $i),
+					'type' => oci_field_type($res, $i),
+					'size' => oci_field_size($res, $i),
+					'table' => $table
+				);
+			}
+			$this->_fields = $fields;
 			$ret = $this->fetch($res, $callback);
-		else {
+		} else {
 			$e = oci_error();
     		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
 		
 		return $ret;
 	}
+
+	public function fields($table) {
+		if (empty($this->_fields)) {
+			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			if ($res = $this->exec($query)) {
+				$nfields = oci_num_fields($res);
+				$fields = array();
+				for ($i=1; $i<=$nfields; $i++) {
+					$fields[] = (object) array(
+						'name' => oci_field_name($res, $i),
+						'type' => oci_field_type($res, $i),
+						'size' => oci_field_size($res, $i),
+						'table' => $table
+					);
+				}
+				$this->_fields = $fields;
+				oci_free_statement($res);
+			} else {
+				$e = oci_error();
+    			trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+			}
+		} 
+			
+		return $this->_fields;
+	}
+
+	public function num_rows() {
+		return $this->_num_rows;
+	}
+
 }
 
 class QueryHelper {
