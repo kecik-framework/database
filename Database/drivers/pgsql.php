@@ -64,7 +64,8 @@ class Kecik_PostgreSQL {
                     $data->$field = $callback($data->$field, $data);
                 }
             } elseif ($callback_is == 2) {
-                while(list($field, $func) = each($data)) {
+            	reset($callback);
+                while(list($field, $func) = each($callback)) {
                     if (isset($data->$field))
                         $data->$field = $func($data->$field, $data);
                 }
