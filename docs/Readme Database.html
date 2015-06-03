@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Readme Database</title>
+<link rel="stylesheet" href="assets/css/base.css" />
+<script type="text/javascript" src="assets/js/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="kecik-database"><strong>Kecik Database</strong></h1>
+
+<blockquote>
+  <p><strong>PayPal</strong>: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=dony_cavalera_md%40yahoo%2ecom&amp;lc=US&amp;item_name=Dony%20Wahyu%20Isp&amp;no_note=0&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" alt="" title=""></a></p>
+  
+  <p><strong>Rekening Mandiri</strong>: 113-000-6944-858, <strong>Atas Nama</strong>: Dony Wahyu Isprananda</p>
+</blockquote>
+
+<p>Merupakan pustaka/library yang dibuat khusus Framework Kecik, pustaka/library ini dibuat untuk mempermudah anda dalam menggunakan database kedalam project yang anda buat. Pustaka/Library ini, saat ini support untuk database mysql, oracle, postgresql, mongodb dan PDO.</p>
+
+<h2 id="cara-installasi"><strong>Cara Installasi</strong></h2>
+
+<p>file composer.json</p>
+
+
+
+<pre class="prettyprint"><code class="language-json hljs ">{
+    "<span class="hljs-attribute">require</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">kecik/kecik</span>": <span class="hljs-value"><span class="hljs-string">"1.0.*@dev"</span></span>,
+        "<span class="hljs-attribute">kecik/database</span>": <span class="hljs-value"><span class="hljs-string">"1.0.*@dev"</span>
+    </span>}
+</span>}</code></pre>
+
+<p>Jalankan perintah</p>
+
+
+
+<pre class="prettyprint"><code class="language-shell hljs cmake">composer <span class="hljs-keyword">install</span></code></pre>
+
+
+
+<h2 id="settingan-untuk-mysql"><strong>Settingan Untuk MySQL</strong></h2>
+
+<p>Nilai settingan darive untuk database ini adalah <code>mysqli</code> jadi pustaka/library ini tidak menggunakan dari mysql, tapi menggunakan driver mysqli.</p>
+
+<p><strong>Contoh:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'mysqli'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.hostname'</span>, <span class="hljs-string">'localhost'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'root'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dbname'</span>, <span class="hljs-string">'kecik'</span>);</code></pre>
+
+
+
+<h2 id="settingan-untuk-postgresql"><strong>Settingan Untuk PostgreSQL</strong></h2>
+
+<p>Nilai settingan driver untuk database ini adalah <code>pgsql</code>. Untuk PostgreSQL ada cara settingan yaitu:</p>
+
+
+
+<h3 id="tanpa-dsn">Tanpa DSN</h3>
+
+<p><strong>Contoh:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'pgsql'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.hostname'</span>, <span class="hljs-string">'localhost'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'postgres'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);</code></pre>
+
+
+
+<h3 id="dengan-dsn">Dengan DSN</h3>
+
+<p><strong>Contoh:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'pgsql'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dsn'</span>, <span class="hljs-string">"host=localhost port=5432 dbname=kecik user=postgres password=1234567890 options='--client_encoding=UTF8'"</span>);</code></pre>
+
+
+
+<h2 id="settingan-untuk-oracle"><strong>Settingan Untuk Oracle</strong></h2>
+
+<p>Nilai settingan driver untuk database ini adalah <code>oci8</code>, settingan menggunakan dsn.</p>
+
+<p><strong>Contoh:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'oci8'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dsn'</span>, <span class="hljs-string">'localhost/xe'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'kecik'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);</code></pre>
+
+
+
+<h2 id="settingan-untuk-mongodb"><strong>Settingan Untuk MongoDB</strong></h2>
+
+<p>Nilai settingan driver untuk database ini adalah <code>mongo</code>.</p>
+
+<p><strong>Contoh:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'mongo'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dsn'</span>, <span class="hljs-string">'mongodb://localhost'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dbname'</span>, <span class="hljs-string">'kecik'</span>);</code></pre>
+
+
+
+<h2 id="settingan-menggunakan-pdo"><strong>Settingan Menggunakan PDO</strong></h2>
+
+<p>Pustaka/library ini juga mendukung penggunaan driver PDO. Semua settingan menggunakan driver PDO semuanya menggunakan dsn. <br>
+<strong>Contoh PDO MySQL:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'pdo'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dsn'</span>, <span class="hljs-string">'mysql:host=localhost;dbname=kecik;'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'root'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);</code></pre>
+
+<p><strong>Contoh PDO PostgreSQL:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'pdo'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dsn'</span>, <span class="hljs-string">'pgsql:host=localhost;dbname=kecik;'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'postgres'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);</code></pre>
+
+<p><strong>Contoh PDO Oracle:</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'pdo'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dsn'</span>, <span class="hljs-string">'oci:host=localhost;dbname=xe;'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'kecik'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);</code></pre>
+
+
+
+<h3 id="insert"><strong>INSERT</strong></h3>
+
+<p>Format dari fungsi insert.</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;insert(<span class="hljs-variable">$data</span>);</code></pre>
+
+<p>Struktur datanya adalah:</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$data</span> = [
+    <span class="hljs-string">'field_nama'</span> =&gt; <span class="hljs-string">'Dony Wahyu Isp'</span>,
+    <span class="hljs-string">'field_email'</span> =&gt; <span class="hljs-string">'dna.extrim@gmail.com'</span>
+];</code></pre>
+
+
+
+<h3 id="update"><strong>UPDATE</strong></h3>
+
+<p>Format dari fungsi update.</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;update(<span class="hljs-variable">$key</span>, <span class="hljs-variable">$data</span>);</code></pre>
+
+<p>Struktur key dan datanya adalah:</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-comment">//** $key</span>
+<span class="hljs-variable">$key</span> = [<span class="hljs-string">'id'</span> =&gt; <span class="hljs-number">2</span>];
+
+<span class="hljs-comment">//** $data</span>
+<span class="hljs-variable">$data</span> = [
+    <span class="hljs-string">'field_nama'</span> =&gt; <span class="hljs-string">'dnaextrim'</span>,
+    <span class="hljs-string">'field_email'</span> =&gt; <span class="hljs-string">'dna.extrim@gmail.com'</span>
+];</code></pre>
+
+
+
+<h3 id="delete"><strong>DELETE</strong></h3>
+
+<p>Format fungsi delete.</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;delete(<span class="hljs-variable">$key</span>);</code></pre>
+
+<p>Struktur key nya adalah:</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$key</span> = [<span class="hljs-string">'id'</span> =&gt; <span class="hljs-number">3</span>];</code></pre>
+
+
+
+<h3 id="select"><strong>SELECT</strong></h3>
+
+<p>Format untuk fungsi find/select</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find(<span class="hljs-variable">$filter</span>, <span class="hljs-variable">$limit</span>, <span class="hljs-variable">$order_by</span>);</code></pre>
+
+<p><strong>SELECT Field</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([
+    <span class="hljs-string">'select'</span> =&gt; [
+        [<span class="hljs-string">'nama, email'</span>], <span class="hljs-comment">//** Cara Pertama</span>
+        [<span class="hljs-string">'nama'</span>, <span class="hljs-string">'email'</span>], <span class="hljs-comment">//** Cara Kedua</span>
+        [<span class="hljs-string">'max'</span>=&gt;<span class="hljs-string">'nilai'</span>], <span class="hljs-comment">//** Cara Ketiga</span>
+        [<span class="hljs-string">'max'</span>=&gt;<span class="hljs-string">'nilai'</span>, <span class="hljs-string">'as'</span>=&gt;<span class="hljs-string">'nilai_maksimum'</span>] <span class="hljs-comment">//** Cara Keempat</span>
+    ]
+]);</code></pre>
+
+<blockquote>
+  <p><strong>Catatan:</strong> Cara keempat hanya berlaku untuk database dengan SQL bukan untuk database NoSQL</p>
+</blockquote>
+
+<p><strong>LIMIT</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([],[<span class="hljs-number">10</span>]); <span class="hljs-comment">//** Cara Pertama limit 10 baris</span>
+<span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([], [<span class="hljs-number">5</span>, <span class="hljs-number">10</span>]); <span class="hljs-comment">//** Cara Kedua limit dari posisi index ke 5 sebanyak 10 baris</span></code></pre>
+
+<p><strong>ORDER BY</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([],[],[
+    <span class="hljs-string">'asc'</span> =&gt; [<span class="hljs-string">'nama'</span>, <span class="hljs-string">'email'</span>], <span class="hljs-comment">//** Pengurutan menaik/Ascending untuk field nama dan email</span>
+    <span class="hljs-string">'desc'</span> =&gt; [<span class="hljs-string">'nama'</span>, <span class="hljs-string">'email'</span>] <span class="hljs-comment">//** Pengurutan menurun/Descending untuk field nama dan email</span>
+]);</code></pre>
+
+<p><strong>WHERE</strong> <br>
+Where tanpa pengelompokan</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([
+    <span class="hljs-string">'where'</span>=&gt; [
+        [<span class="hljs-string">"nama = 'Dony Wahyu Isp'"</span>], <span class="hljs-comment">//** Cara Pertama</span>
+        [<span class="hljs-string">"nama"</span>, <span class="hljs-string">"='Dony Wahyu Isp'"</span>], <span class="hljs-comment">//** Cara Kedua</span>
+        [<span class="hljs-string">"nama"</span>, <span class="hljs-string">"="</span>, <span class="hljs-string">"'Dony Wahyu Isp'"</span>], <span class="hljs-comment">//** Cara Ketiga</span>
+        [<span class="hljs-string">"nama = '?' AND email='?'"</span> =&gt; [<span class="hljs-variable">$nama</span>, <span class="hljs-variable">$email</span>]], <span class="hljs-comment">//** Cara Keempat</span>
+        [<span class="hljs-string">"nama"</span>, <span class="hljs-string">"='?' AND email='?'"</span> =&gt; [<span class="hljs-variable">$nama</span>, <span class="hljs-variable">$email</span>]], <span class="hljs-comment">//** Cara Kelima</span>
+    ]
+]);</code></pre>
+
+<p>Where dengan pengelompokan</p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([
+    <span class="hljs-string">'where'</span> =&gt; [
+        <span class="hljs-string">'and'</span> =&gt; [
+            <span class="hljs-string">'and'</span> =&gt; [
+                [<span class="hljs-string">"nama"</span>, <span class="hljs-string">"="</span>, <span class="hljs-string">"'Dony Wahyu Isp'"</span>],
+                [<span class="hljs-string">"email"</span>, <span class="hljs-string">"="</span>, <span class="hljs-string">"'dna.extrim@gmail.com'"</span>]
+            ],
+            <span class="hljs-string">'or'</span> =&gt; [
+                [<span class="hljs-string">"nama"</span>, <span class="hljs-string">"="</span>, <span class="hljs-string">"'Dony Wahyu Isp'"</span>],
+                [<span class="hljs-string">"email"</span>, <span class="hljs-string">"="</span>, <span class="hljs-string">"'dna.extrim@gmail.com'"</span>]
+            ]
+        ]
+    ]
+]);</code></pre>
+
+<p><strong>BETWEEN</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([
+    <span class="hljs-string">'where'</span> =&gt; [
+        [<span class="hljs-string">"nilai"</span>, <span class="hljs-string">"between"</span>, [<span class="hljs-number">50</span>, <span class="hljs-number">100</span>]],
+        [<span class="hljs-string">"nilai"</span>, <span class="hljs-string">"not between"</span>, [<span class="hljs-number">50</span>, <span class="hljs-number">100</span>]], <span class="hljs-comment">//** Dengan NOT</span>
+    ]
+]);</code></pre>
+
+<p><strong>IN</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([
+    <span class="hljs-string">'where'</span> =&gt; [
+        [<span class="hljs-string">"nilai"</span>, <span class="hljs-string">"in"</span>, [<span class="hljs-number">50</span>, <span class="hljs-number">60</span>, <span class="hljs-number">70</span>, <span class="hljs-number">80</span>]],
+        [<span class="hljs-string">"nilai"</span>, <span class="hljs-string">"not in"</span>, [<span class="hljs-number">50</span>, <span class="hljs-number">60</span>, <span class="hljs-number">70</span>, <span class="hljs-number">80</span>]], <span class="hljs-comment">//** Dengan NOT</span>
+    ]
+]);</code></pre>
+
+<p><strong>JOIN (Natural/Left/Right)</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-variable">$app</span>-&gt;db-&gt;<span class="hljs-variable">$table</span>-&gt;find([
+    <span class="hljs-string">'join'</span> =&gt; [
+        [<span class="hljs-string">'natural'</span>, <span class="hljs-string">'table_profil'</span>], <span class="hljs-comment">//** Natural JOIN</span>
+        [<span class="hljs-string">'left'</span>, <span class="hljs-string">'table_profil'</span>, <span class="hljs-string">'field_nama'</span>], <span class="hljs-comment">//** Left/Righ Join Cara Pertama</span>
+        [<span class="hljs-string">'left'</span>, <span class="hljs-string">'table_profil'</span>, [field_nama_profile, <span class="hljs-variable">$field_nama_user</span>]] <span class="hljs-comment">//** Left/Right Join Cara Kedua</span>
+    ]
+]);</code></pre>
+
+<blockquote>
+  <p><strong>Catatan</strong>: Untuk sementara ini join belum support untuk penggunaan database NoSQL seperti MongoDB</p>
+</blockquote>
+
+
+
+<h2 id="contoh-penggunaan-pada-kecik-framework-versi-103">Contoh penggunaan Pada Kecik Framework Versi 1.0.3</h2>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-preprocessor">&lt;?php</span>
+<span class="hljs-keyword">require</span> <span class="hljs-string">"vendor/autoload.php"</span>;
+
+<span class="hljs-variable">$config</span> = [
+    <span class="hljs-string">'libraries'</span> =&gt; [
+        <span class="hljs-string">'database'</span> =&gt; [
+            <span class="hljs-string">'enable'</span> =&gt; <span class="hljs-keyword">TRUE</span>,
+            <span class="hljs-string">'config'</span> =&gt; [
+                <span class="hljs-string">'driver'</span> =&gt; <span class="hljs-string">'mysqli'</span>,
+                <span class="hljs-string">'hostname'</span> =&gt; <span class="hljs-string">'localhost'</span>,
+                <span class="hljs-string">'username'</span> =&gt; <span class="hljs-string">'root'</span>,
+                <span class="hljs-string">'password'</span> =&gt; <span class="hljs-string">'1234567890'</span>,
+                <span class="hljs-string">'dbname'</span> =&gt; <span class="hljs-string">'kecik'</span>
+            ]
+        ]
+    ]
+];
+
+<span class="hljs-variable">$app</span> = <span class="hljs-keyword">new</span> Kecik\Kecik(<span class="hljs-variable">$config</span>);
+<span class="hljs-variable">$con</span> = <span class="hljs-variable">$app</span>-&gt;db-&gt;connect();
+
+<span class="hljs-variable">$res</span> = <span class="hljs-variable">$app</span>-&gt;db-&gt;exec(<span class="hljs-string">"SELECT * FROM data"</span>, <span class="hljs-string">'data'</span>);
+print_r(<span class="hljs-variable">$app</span>-&gt;db-&gt;fetch(<span class="hljs-variable">$res</span>));
+
+<span class="hljs-variable">$id</span> = [<span class="hljs-string">'id'</span>=&gt;<span class="hljs-string">'2'</span>];
+<span class="hljs-variable">$data</span> = [
+    <span class="hljs-string">'nama'</span>=&gt;<span class="hljs-string">'Dony Wahyu Isp'</span>,
+    <span class="hljs-string">'email'</span>=&gt;<span class="hljs-string">'dna.extrim@gmail.com'</span>
+];
+
+<span class="hljs-variable">$db</span> = <span class="hljs-variable">$app</span>-&gt;db;
+<span class="hljs-variable">$ret</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;insert(<span class="hljs-variable">$data</span>);
+<span class="hljs-variable">$ret</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;update(<span class="hljs-variable">$id</span>, <span class="hljs-variable">$data</span>);
+<span class="hljs-variable">$ret</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;delete(<span class="hljs-variable">$id</span>);
+
+<span class="hljs-variable">$app</span>-&gt;get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> <span class="hljs-title">use</span> <span class="hljs-params">(<span class="hljs-variable">$db</span>)</span>{</span>
+    <span class="hljs-variable">$rows</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;find([
+        <span class="hljs-string">'where'</span> =&gt; [
+            [<span class="hljs-string">'nama'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">"'Dony Wahyu Isp'"</span>]
+        ]
+    ]);
+
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$rows</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$row</span>) {
+        <span class="hljs-keyword">echo</span> <span class="hljs-string">'Nama: '</span>.<span class="hljs-variable">$row</span>-&gt;nama.<span class="hljs-string">'&lt;br /&gt;'</span>;
+        <span class="hljs-keyword">echo</span> <span class="hljs-string">'Email: '</span>.<span class="hljs-variable">$row</span>-&gt;email.<span class="hljs-string">'&lt;hr /&gt;'</span>;
+    }
+});
+
+<span class="hljs-variable">$app</span>-&gt;run();
+<span class="hljs-preprocessor">?&gt;</span></code></pre>
+
+
+
+<h2 id="contoh-tanpa-menggunakan-autoload-library">Contoh Tanpa Menggunakan Autoload Library</h2>
+
+
+
+<pre class="prettyprint"><code class="language-php hljs "><span class="hljs-preprocessor">&lt;?php</span>
+<span class="hljs-variable">$app</span> = <span class="hljs-keyword">new</span> Kecik\Kecik();
+
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.driver'</span>, <span class="hljs-string">'mysqli'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.hostname'</span>, <span class="hljs-string">'localhost'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.username'</span>, <span class="hljs-string">'root'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.password'</span>, <span class="hljs-string">'1234567890'</span>);
+<span class="hljs-variable">$app</span>-&gt;config-&gt;set(<span class="hljs-string">'database.dbname'</span>, <span class="hljs-string">'kecik'</span>);
+
+<span class="hljs-variable">$db</span> = <span class="hljs-keyword">new</span> Kecik\Database(<span class="hljs-variable">$app</span>);
+<span class="hljs-variable">$con</span> = <span class="hljs-variable">$db</span>-&gt;connect();
+
+<span class="hljs-variable">$res</span> = <span class="hljs-variable">$db</span>-&gt;exec(<span class="hljs-string">"SELECT * FROM data"</span>, <span class="hljs-string">'data'</span>);
+print_r(<span class="hljs-variable">$db</span>-&gt;fetch(<span class="hljs-variable">$res</span>));
+
+<span class="hljs-variable">$id</span> = [<span class="hljs-string">'id'</span>=&gt;<span class="hljs-string">'2'</span>];
+<span class="hljs-variable">$data</span> = [
+    <span class="hljs-string">'nama'</span>=&gt;<span class="hljs-string">'Dony Wahyu Isp'</span>,
+    <span class="hljs-string">'email'</span>=&gt;<span class="hljs-string">'dna.extrim@gmail.com'</span>
+];
+
+<span class="hljs-variable">$ret</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;insert(<span class="hljs-variable">$data</span>);
+<span class="hljs-variable">$ret</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;update(<span class="hljs-variable">$id</span>, <span class="hljs-variable">$data</span>);
+<span class="hljs-variable">$ret</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;delete(<span class="hljs-variable">$id</span>);
+
+<span class="hljs-variable">$app</span>-&gt;get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> <span class="hljs-title">use</span> <span class="hljs-params">(<span class="hljs-variable">$db</span>)</span>{</span>
+    <span class="hljs-variable">$rows</span> = <span class="hljs-variable">$db</span>-&gt;data-&gt;find([
+        <span class="hljs-string">'where'</span> =&gt; [
+            [<span class="hljs-string">'nama'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">"'Dony Wahyu Isp'"</span>]
+        ]
+    ]);
+
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$rows</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$row</span>) {
+        <span class="hljs-keyword">echo</span> <span class="hljs-string">'Nama: '</span>.<span class="hljs-variable">$row</span>-&gt;nama.<span class="hljs-string">'&lt;br /&gt;'</span>;
+        <span class="hljs-keyword">echo</span> <span class="hljs-string">'Email: '</span>.<span class="hljs-variable">$row</span>-&gt;email.<span class="hljs-string">'&lt;hr /&gt;'</span>;
+    }
+});
+
+<span class="hljs-variable">$app</span>-&gt;run();
+<span class="hljs-preprocessor">?&gt;</span></code></pre></div></body>
+</html>
