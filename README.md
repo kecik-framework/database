@@ -1,5 +1,9 @@
 **Kecik Database**
 ================
+> **PayPal**: [![](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=dony_cavalera_md%40yahoo%2ecom&lc=US&item_name=Dony%20Wahyu%20Isp&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
+> 
+> **Rekening Mandiri**: 113-000-6944-858, **Atas Nama**: Dony Wahyu Isprananda
+
 Merupakan pustaka/library yang dibuat khusus Framework Kecik, pustaka/library ini dibuat untuk mempermudah anda dalam menggunakan database kedalam project yang anda buat. Pustaka/Library ini, saat ini support untuk database mysql, oracle, postgresql, mongodb dan PDO.
 
 ## **Cara Installasi**
