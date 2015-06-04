@@ -23,7 +23,7 @@ class Kecik_MySqli {
 	}
 
 	public function connect($dbname, $hostname='localhost', $username='root', $password='', $failover=FALSE, $charset='utf8') {
-		$this->dbcon = @mysqli_connect(
+		$this->dbcon = @new mysqli(
 		    $hostname,
 		    $username,
 		    $password,
@@ -33,13 +33,14 @@ class Kecik_MySqli {
 		if ($failover === FALSE) {
 			if ( ($this->dbcon->connect_errno) ) {
 			    header('X-Error-Message: Fail Connecting', true, 500);
-			    die("Failed to connect to MySQL: " . $this->dbcon->connect_errno);
+			    die("Failed to connect to MySQL: " . $this->dbcon->connect_err);
 			}
 		}
         
         if (empty($charset)) $charset = 'utf8';
-        
-        $this->dbcon->set_charset($charset );
+        if ($this->dbcon)
+        	$this->dbcon->set_charset($charset);
+
 		return $this->dbcon;
 	}
 
