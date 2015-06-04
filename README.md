@@ -140,11 +140,11 @@ $key = ['id' => 3];
 ### **SELECT**
 Format untuk fungsi find/select
 ```php
-$app->db->$table->find($filter, $limit, $order_by);
+$rows = $app->db->$table->find($filter, $limit, $order_by);
 ```
 **SELECT Field**
 ```php
-$app->db->$table->find([
+$rows = $app->db->$table->find([
 	'select' => [
 		['nama, email'], //** Cara Pertama
 		['nama', 'email'], //** Cara Kedua
@@ -158,13 +158,13 @@ $app->db->$table->find([
 
 **LIMIT**
 ```php
-$app->db->$table->find([],[10]); //** Cara Pertama limit 10 baris
+$rows = $app->db->$table->find([],[10]); //** Cara Pertama limit 10 baris
 $app->db->$table->find([], [5, 10]); //** Cara Kedua limit dari posisi index ke 5 sebanyak 10 baris
 ```
 
 **ORDER BY**
 ```php
-$app->db->$table->find([],[],[
+$rows = $app->db->$table->find([],[],[
 	'asc' => ['nama', 'email'], //** Pengurutan menaik/Ascending untuk field nama dan email
 	'desc' => ['nama', 'email'] //** Pengurutan menurun/Descending untuk field nama dan email
 ]);
@@ -173,29 +173,29 @@ $app->db->$table->find([],[],[
 **WHERE**
 Where tanpa pengelompokan
 ```php
-$app->db->$table->find([
+$rows = $app->db->$table->find([
 	'where'=> [
 		["nama = 'Dony Wahyu Isp'"], //** Cara Pertama
 		["nama", "='Dony Wahyu Isp'"], //** Cara Kedua
-		["nama", "=", "'Dony Wahyu Isp'"], //** Cara Ketiga
-		["nama = '?' AND email='?'" => [$nama, $email]], //** Cara Keempat
-		["nama", "='?' AND email='?'" => [$nama, $email]], //** Cara Kelima
+		["nama", "=", "Dony Wahyu Isp"], //** Cara Ketiga
+		["nama = '?' AND email = '?'" => [$nama, $email]], //** Cara Keempat
+		["nama", "='?' AND email = '?'" => [$nama, $email]], //** Cara Kelima
 	]
 ]);
 ```
 
 Where dengan pengelompokan
 ```php
-$app->db->$table->find([
+$rows = $app->db->$table->find([
 	'where' => [
 		'and' => [
 			'and' => [
-				["nama", "=", "'Dony Wahyu Isp'"],
-				["email", "=", "'dna.extrim@gmail.com'"]
+				["nama", "=", "Dony Wahyu Isp"],
+				["email", "=", "dna.extrim@gmail.com"]
 			],
 			'or' => [
-				["nama", "=", "'Dony Wahyu Isp'"],
-				["email", "=", "'dna.extrim@gmail.com'"]
+				["nama", "=", "Dony Wahyu Isp"],
+				["email", "=", "dna.extrim@gmail.com"]
 			]
 		]
 	]
@@ -204,7 +204,7 @@ $app->db->$table->find([
 
 **BETWEEN**
 ```php
-$app->db->$table->find([
+$rows = $app->db->$table->find([
 	'where' => [
 		["nilai", "between", [50, 100]],
 		["nilai", "not between", [50, 100]], //** Dengan NOT
@@ -214,28 +214,98 @@ $app->db->$table->find([
 
 **IN**
 ```php
-$app->db->$table->find([
+$rows = $app->db->$table->find([
 	'where' => [
 		["nilai", "in", [50, 60, 70, 80]],
 		["nilai", "not in", [50, 60, 70, 80]], //** Dengan NOT
 	]
 ]);
 ```
+**GROUP BY**
+```php
+$rows = $app->db->$table->find([
+	'group by'=> [
+		['username']
+	]
+]);
+```
 
 **JOIN (Natural/Left/Right)**
 ```php
-$app->db->$table->find([
+$rows = $app->db->$table->find([
 	'join' => [
 		['natural', 'table_profil'], //** Natural JOIN
 		['left', 'table_profil', 'field_nama'], //** Left/Righ Join Cara Pertama
-		['left', 'table_profil', [field_nama_profile, $field_nama_user]] //** Left/Right Join Cara Kedua
+		['left', 'table_profil', ['field_nama_profile', 'field_nama_user']] //** Left/Right Join Cara Kedua
 	]
 ]);
 ```
 > **Catatan**: Untuk sementara ini join belum support untuk penggunaan database NoSQL seperti MongoDB
 
+**CALLBACK**
+Untuk melakukan manipulasi hasil row baik diterapkan pada seluruh field ataupun pada field tertentu saja. Parameter yang digunakan untuk callback adalah `$value` dan `$row`, `$value` merupakan nilai yang diberikan oleh field pada setiap row/baris, sedangkan `$row` merupakan data pada setiap row/baris nya.
+####Penerapan pada seluruh Field
+```php
+$rows = $app->db->$table->find([
+	'callback'=> function($value, $row) {
+		return 'Rp. '.$value;
+	}
+]);
+```
 
-## Contoh penggunaan Pada Kecik Framework Versi 1.0.3
+####Penerapan pada Field tertentu
+```php
+$rows = $app->db->$table->find([
+	'callback'=> [
+		'harga' => function($value, $row) {
+			return 'Rp. '.$value;
+		},
+		'password' => function($value, $row) {
+			return '*****';
+		},
+		'id' => function($value, $row) {
+			$row->action = "{\"id\":\"$value\"}";
+			return $value;
+		},
+	]
+]);
+```
+
+###**Fields**
+Untuk Mendapatkan nama field berserta dengan nama, tipe, ukuran dan nama table.
+
+**Mendapatkan field yang bersumber dari query find **
+```php
+$rows = $app->db->$table->find();
+$fields = $app->db->$table->fields();
+foreach($fields as $field) {
+	echo 'Name: '.$field->name;
+	echo 'Type: '.$field->type;
+	echo 'Size: '.$field->size;
+	echo 'Table: '.$field->table;
+}
+```
+
+**Mendapatkan field dari table**
+```php
+$fields = $app->db->$table->fields();
+foreach($fields as $field) {
+	echo 'Name: '.$field->name;
+	echo 'Type: '.$field->type;
+	echo 'Size: '.$field->size;
+	echo 'Table: '.$field->table;
+}
+```
+
+###**Num Rows**
+Untuk mendapatkan jumlah row/baris dari hasil find
+
+```php
+$rows = $app->db->$table->find();
+$count = $app->db->$table->num_rows();
+```
+
+## Contoh penggunaan Pada Kecik Framework Versi 1.1.*
 ```php
 <?php
 require "vendor/autoload.php";
@@ -275,12 +345,22 @@ $ret = $db->data->delete($id);
 $app->get('/', function() use ($db){
 	$rows = $db->data->find([
 		'where' => [
-			['nama', '=', "'Dony Wahyu Isp'"]
+			['nama', '=', "Dony Wahyu Isp"]
+		],
+		'callback' => [
+			//manipulating value of email fields
+			'email' => function($val, $row) {
+				return substr($val, 0, 3).str_repeat('*', strpos($val, '@')-3).substr($val, strpos($val, '@'))
+			}
 		]
 	]);
 	
 	foreach ($rows as $row) {
 		echo 'Nama: '.$row->nama.'<br />';
+		/* 
+		Output email for dna.extrim@gmail.com
+		is dna*******@gmail.com
+		*/
 		echo 'Email: '.$row->email.'<hr />';
 	}
 });
@@ -318,12 +398,22 @@ $ret = $db->data->delete($id);
 $app->get('/', function() use ($db){
 	$rows = $db->data->find([
 		'where' => [
-			['nama', '=', "'Dony Wahyu Isp'"]
+			['nama', '=', "Dony Wahyu Isp"]
+		],
+		'callback' => [
+			//manipulating value of email fields
+			'email' => function($val, $row) {
+				return substr($val, 0, 3).str_repeat('*', strpos($val, '@')-3).substr($val, strpos($val, '@'))
+			}
 		]
 	]);
 	
 	foreach ($rows as $row) {
 		echo 'Nama: '.$row->nama.'<br />';
+		/* 
+		Output email for dna.extrim@gmail.com
+		is dna*******@gmail.com
+		*/
 		echo 'Email: '.$row->email.'<hr />';
 	}
 });
@@ -331,3 +421,4 @@ $app->get('/', function() use ($db){
 $app->run();
 ?>
 ```
+
