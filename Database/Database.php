@@ -51,7 +51,8 @@ class Database {
  	 * __construct
  	 * @param Kecik $app
  	 **/
-	public function __construct(Kecik $app) {
+	public function __construct() {
+		$app = Kecik::getInstance();
 		$this->app = $app;
 
 		$config = $app->config;
