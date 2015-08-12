@@ -20,6 +20,8 @@ class Kecik_MySqli {
 
 	private $_pk = '';
 
+	private $_joinFields = array();
+
 	public function __construct() {
 
 	}
@@ -79,7 +81,26 @@ class Kecik_MySqli {
                 }
             }
             
-			$result[] = $data;
+            if (count($this->_joinFields) > 0) {
+            	reset($this->_joinFields);
+            	while (list($field, $join) = each($this->_joinFields)) {
+            		if (isset($data->$field)) {
+            			$modelJoin = $this->_joinFields[$field][0];
+            			$realField = $this->_joinFields[$field][1];
+
+            			if (!isset($data->$modelJoin)) $dataJoin = new stdclass;
+
+            			$dataJoin->$realField = $data->$field;
+	            		unset($data->$field);
+
+		            	
+		            	$data->$modelJoin = $dataJoin;
+	            	}
+            	}
+            	
+            	$result[] = $data;
+            } else
+				$result[] = $data;
 		}
 
 		$res->close();
@@ -221,8 +242,27 @@ class Kecik_MySqli {
             $callback = $condition['callback'];
             unset($condition['callback']);
         }
+
+        if (isset($condition['join']) && count($condition['join']) > 0) {
+        	if (!isset($condition['select'])) $condition['select'] = array();
+
+        	$this->_joinFields = array();
+        	while (list($id, $join) = each($condition['join'])) {
+        		$this->_fields = '';
+        		$fields = $this->fields($join[1]);
+
+        		while (list($id, $field) = each($fields)) {
+        			$this->_joinFields["__$join[1]_$field->name"] = array($join[1], $field->name);
+        			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
+        		}
+        	}
+        	
+        	reset($condition['join']);
+        }
+
 		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)) {
+			$this->_fields = '';
 			$fields = $res->fetch_fields();
 			foreach ($fields as $field) {
 				$this->_fields[] = (object) array(
