@@ -18,6 +18,10 @@ class Kecik_PostgreSQL {
 
 	private $_num_rows = 0;
 
+	private $_pk = '';
+	
+	private $_insert_id = null;
+
 	public function __construct() {
 
 	}
@@ -115,7 +119,9 @@ class Kecik_PostgreSQL {
 		$values = implode(',', $values);
 		$query = "INSERT INTO $table ($fields) VALUES ($values)";
 
-		return $this->exec($query);
+		$res = $this->exec($query);
+		$this->_insert_id = pg_last_oid($res);
+		return $res;
 	}
 
 	public function update($table, $id, $data) {
@@ -245,6 +251,13 @@ class Kecik_PostgreSQL {
 		return $this->_num_rows;
 	}
 
+	public function insert_id() {
+		return $this->_insert_id;
+	}
+
+	public function set_pk($pk) {
+		$this->_pk = $pk;
+	}
 }
 
 class QueryHelper {
@@ -451,7 +464,18 @@ class QueryHelper {
 					if (is_array($joinlist[2]) && count($joinlist[2]) == 2) {
 						$on1 = $joinlist[2][0];
 						$on2 = $joinlist[2][1];
-						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
+
+						if (strpos($on1, '.') > 1 || strpos($on2, '.')) {
+
+							if (strpos($on1, '.') === false)
+								$on1 = "$joinlist[1].$on1";
+
+							if (strpos($on2, '.') === false)
+								$on2 = "$joinlist[1].$on2";
+							
+							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $on1 = $on2";
+						} else
+							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
 					} else {
 						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$joinlist[2] = $table.$joinlist[2]";
 					}

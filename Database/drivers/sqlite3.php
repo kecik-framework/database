@@ -14,6 +14,14 @@ class Kecik_SQLite3 extends SQLite3 {
 
 	private $_select = '';
 
+	private $_fields = '';
+
+	private $_num_rows = 0;
+
+	private $_pk = '';
+
+	private $_insert_id = null;
+
 	public function __construct() {
 
 	}
@@ -48,6 +56,7 @@ class Kecik_SQLite3 extends SQLite3 {
 
 	public function fetch($res) {
 		$result = array();
+		$this->_num_rows = $res->numRows();
 		while ($data = $res->fetchArray()) {
 		    $result[] = (object) $data;
 
@@ -134,6 +143,22 @@ class Kecik_SQLite3 extends SQLite3 {
 			$this->dbcon->lastErrorMsg();
 		
 		return $ret;
+	}
+
+	public function fields($table) {
+		return array();
+	}
+
+	public function num_rows() {
+		return $this->_num_rows;
+	}
+
+	public function insert_id() {
+		return $this->dbcon->lastInsertRowid();
+	}
+
+	public function set_pk($pk) {
+		$this->_pk = $pk;
 	}
 }
 

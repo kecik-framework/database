@@ -14,6 +14,10 @@ class Kecik_SQLite {
 
 	private $_select = '';
 
+	private $_pk = '';
+
+	private $_insert_id = null;
+
 	public function __construct() {
 
 	}
@@ -136,6 +140,22 @@ class Kecik_SQLite {
 			sqlite_last_error($this->dbcon);
 		
 		return $ret;
+	}
+
+	public function fields($table) {
+		return array();
+	}
+
+	public function num_rows() {
+		return 0;
+	}
+
+	public function insert_id() {
+		return null;
+	}
+
+	public function set_pk($pk) {
+		$this->_pk = $pk;
 	}
 }
 

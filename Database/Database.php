@@ -230,6 +230,15 @@ class Database {
 	public function num_rows() {
 		return $this->db->num_rows();
 	}
+
+	public function insert_id() {
+		return $this->db->insert_id();
+	}
+
+	public function set_pk($pk) {
+		$this->db->set_pk($pk);
+	}
+
 	public function __destruct() {
 		unset($this->db);
 	}

@@ -18,6 +18,8 @@ class Kecik_MySqli {
 
 	private $_num_rows = 0;
 
+	private $_pk = '';
+
 	public function __construct() {
 
 	}
@@ -262,6 +264,14 @@ class Kecik_MySqli {
 	public function num_rows() {
 		return $this->_num_rows;
 	}
+
+	public function insert_id() {
+		return $this->dbcon->insert_id;
+	}
+
+	public function set_pk($pk) {
+		$this->pk = $pk;
+	}
 }
 
 class QueryHelper {
@@ -492,10 +502,19 @@ class QueryHelper {
 					if (is_array($joinlist[2]) && count($joinlist[2]) == 2) {
 						$on1 = $joinlist[2][0];
 						$on2 = $joinlist[2][1];
-						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
-					} else {
+						if (strpos($on1, '.') > 1 || strpos($on2, '.')) {
+
+							if (strpos($on1, '.') === false)
+								$on1 = "$joinlist[1].$on1";
+
+							if (strpos($on2, '.') === false)
+								$on2 = "$joinlist[1].$on2";
+							
+							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $on1 = $on2";
+						} else
+							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
+					} else 
 						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$joinlist[2] = $table.$joinlist[2]";
-					}
 				}
 			}
 

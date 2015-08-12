@@ -21,6 +21,10 @@ class Kecik_Mongo {
 
 	private $_num_rows = 0;
 
+	private $_pk = '';
+
+	private $_insert_id = null;
+
 	public function __construct() {
 
 	}
@@ -97,7 +101,9 @@ class Kecik_Mongo {
 	}
 
 	public function insert($table, $data) {
-		return $this->db->$table->insert($data);
+		$res = $this->db->$table->insert($data);
+		$this->_insert_id = $data['_id'];
+		return $res;
 	}
 
 	public function update($table, $id, $data) {
@@ -135,6 +141,13 @@ class Kecik_Mongo {
 		return $this->_num_rows;
 	}
 
+	public function insert_id() {
+		return $this->_insert_id;
+	}
+
+	public function set_pk($pk) {
+		$this->_pk = $pk;
+	}
 }
 
 class QueryHelper {
