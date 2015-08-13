@@ -244,7 +244,7 @@ class Kecik_MySqli {
         }
 
         if (isset($condition['join']) && count($condition['join']) > 0) {
-        	if (!isset($condition['select'])) $condition['select'] = array();
+        	if (!isset($condition['select'])) $condition['select'] = array(array("$table.*"));
 
         	$this->_joinFields = array();
         	while (list($id, $join) = each($condition['join'])) {
