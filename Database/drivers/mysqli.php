@@ -40,7 +40,7 @@ class Kecik_MySqli {
 			    die("Failed to connect to MySQL: " . $this->dbcon->connect_err);
 			}
 		}
-        
+
         if (empty($charset)) $charset = 'utf8';
         if ($this->dbcon)
         	$this->dbcon->set_charset($charset);
@@ -60,7 +60,7 @@ class Kecik_MySqli {
 
 	public function fetch($res, $callback=null) {
 		$result = array();
-        
+
         $callback_is = 0;
         if (is_callable($callback))
             $callback_is = 1;
@@ -80,7 +80,7 @@ class Kecik_MySqli {
                         $data->$field = $func($data->$field, $data);
                 }
             }
-            
+
             if (count($this->_joinFields) > 0) {
             	reset($this->_joinFields);
             	while (list($field, $join) = each($this->_joinFields)) {
@@ -93,18 +93,18 @@ class Kecik_MySqli {
             			$dataJoin->$realField = $data->$field;
 	            		unset($data->$field);
 
-		            	
+
 		            	$data->$modelJoin = $dataJoin;
 	            	}
             	}
-            	
+
             	$result[] = $data;
             } else
 				$result[] = $data;
 		}
 
 		$res->close();
-		
+
 		return $result;
 	}
 
@@ -196,7 +196,7 @@ class Kecik_MySqli {
 
 		$fieldsValues = implode(',', $fieldsValues);
 		$query = "UPDATE `$table` SET $fieldsValues $where";
-		
+
 		return $this->exec($query);
 	}
 
@@ -256,7 +256,7 @@ class Kecik_MySqli {
         			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
         		}
         	}
-        	
+
         	reset($condition['join']);
         }
 
@@ -275,8 +275,8 @@ class Kecik_MySqli {
 			$ret = $this->fetch($res, $callback);
 		} else
 			echo $this->dbcon->error;
-		
-		
+
+
 		return $ret;
 	}
 
@@ -296,8 +296,8 @@ class Kecik_MySqli {
 				$res->close();
 			} else
 				echo $this->dbcon->error;
-		} 
-			
+		}
+
 		return $this->_fields;
 	}
 
@@ -349,7 +349,7 @@ class QueryHelper {
 					}
 				}
 			}
-			
+
 			$ret = implode(', ', $select).' ';
 		}
 
@@ -365,14 +365,14 @@ class QueryHelper {
 
 		if (is_array($list) && count($list) > 0) {
 			while (list($idx, $wherelist) = each($list)) {
-				
+
 				//sub operator
 				if ( is_string($idx) && in_array($idx, $opt)) {
 					$where[$idx][] .= '('.self::where($dbcon, $wherelist, $idx, $idx_where+1, $idx).')';
 					$optrow[] = $idx;
 				//logical
 				} elseif (is_array($wherelist)) {
-					
+
 					if (count($wherelist) == 1 && isset($wherelist[0])) {
 						$where[$group][] = $wherelist[0];
 					} else {
@@ -380,7 +380,7 @@ class QueryHelper {
 						while (list($cond, $val) = each($wherelist)) {
 							// if Count item 1
 							if (count($wherelist) == 1) {
-								
+
 								for( $i=0; $i <= substr_count($cond, '?'); $i++) {
 									$pos = strpos($cond, '?');
 									$tmp = substr($cond, 0, $pos);
@@ -392,7 +392,7 @@ class QueryHelper {
 								$where[$group][] = $cond;
 							// if Count item 2
 							} elseif (count($wherelist) == 2) {
-								
+
 								if (is_array($val)) {
 									while(list($condkey, $condval) = each($val)) {
 										for( $i=0; $i <= substr_count($cond, '?'); $i++) {
@@ -437,11 +437,15 @@ class QueryHelper {
 									}
 								} else {
 									if ($id_step == 0) {
-										$val = explode('.', $val);
-										if (count($val) > 1)
-											$val = "`$val[0]`.`$val[1]`";
-										else
-											$val = "`$val[0]`";
+										if (is_array($val)) {
+											$val = $val[0];
+										} else {
+											$val = explode('.', $val);
+											if (count($val) > 1)
+												$val = "`$val[0]`.`$val[1]`";
+											else
+												$val = "`$val[0]`";
+										}
 
 										$condfield = $val;
 										$id_step++;
@@ -471,7 +475,7 @@ class QueryHelper {
 										$cond = $val;
 									}
 								}
-								
+
 								$where[$group][] = $condfield.$condopt.$cond;
 								$condfield = '';
 							}
@@ -485,7 +489,7 @@ class QueryHelper {
 				$ret = ' WHERE ';
 
 			if (count($optrow) > 0) {
-				
+
 				while (list($id, $opt) = each($optrow)) {
 					$wherestr .= implode(' '.strtoupper($opt).' ', $where[$opt]);
 					if ($id == 0 && $idx_where == 2) $wherestr .= ' '.strtoupper($group_prev).' ';
@@ -502,7 +506,7 @@ class QueryHelper {
 	public static function group_by($dbcon, $list) {
 		$ret = '';
 		$group_by = [];
-		
+
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $group_bylist) = each($list)) {
 				while(list($id, $fields) = each($group_bylist)) {
@@ -520,11 +524,11 @@ class QueryHelper {
 						else
 							$group_by[] = $fields;
 
-					} 
+					}
 
 				}
 			}
-			
+
 			$ret = ' GROUP BY '.implode(', ', $group_by).' ';
 		}
 
@@ -549,11 +553,11 @@ class QueryHelper {
 
 							if (strpos($on2, '.') === false)
 								$on2 = "$joinlist[1].$on2";
-							
+
 							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $on1 = $on2";
 						} else
 							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
-					} else 
+					} else
 						$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$joinlist[2] = $table.$joinlist[2]";
 				}
 			}
@@ -566,7 +570,7 @@ class QueryHelper {
 
 	public static function union($list) {
 		$ret = '';
-		
+
 		if (is_array($list) && count($list) > 0) {
 			$ret = ' UNION '.implode(', ', $list);
 		}
@@ -584,7 +588,7 @@ class QueryHelper {
 		$union = '';
 
 		if (is_array($filter) && count($filter) > 0) {
-			
+
 			while(list($syntax, $query) = each($filter)) {
 				$syntax = strtoupper($syntax);
 
@@ -592,7 +596,7 @@ class QueryHelper {
 					case 'SELECT':
 						$select .= self::select($query);
 					break;
-					
+
 					case 'WHERE':
 						$where = self::where($dbcon, $query);
 					break;
@@ -614,7 +618,7 @@ class QueryHelper {
 					break;
 				}
 			}
-			
+
 		}
 
 		if (is_array($lmt) && count($lmt) > 0) {
