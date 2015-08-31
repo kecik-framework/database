@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/database
  * @license		MIT
- * @version 	1.0.3
+ * @version 	1.1.0
  * @package		MongoDB
  **/
 class Kecik_Mongo {
@@ -25,6 +25,10 @@ class Kecik_Mongo {
 
 	private $_insert_id = null;
 
+	private $_raw_res = NULL;
+
+	private $_query = '';
+	
 	public function __construct() {
 
 	}
@@ -54,6 +58,7 @@ class Kecik_Mongo {
 	}
 
 	public function exec($sql) {
+		$this->$_query = $sql;
 		$this->lastSQL = $sql;
 		$res = $this->db->execute($sql);
 		if (!$res) {
@@ -103,15 +108,29 @@ class Kecik_Mongo {
 	public function insert($table, $data) {
 		$res = $this->db->$table->insert($data);
 		$this->_insert_id = $data['_id'];
-		return $res;
+		return (object) array(
+			'query'=>'db.'.$table.'.insert('.json_encode($data).')', 
+			'id'=>$data['_id'], 
+			'result'=>$res 
+		);
 	}
 
 	public function update($table, $id, $data) {
-		return $this->db->$table->update($id, array('$set'=>$data));
+		$res = $this->db->$table->update($id, array('$set'=>$data));
+		return (object) array(
+			'query'=>'db.'.$table.'.update('.json_encode($id).', '.json_encode($data).')', 
+			'id'=>$data['_id'],
+			'result'=>$res 
+		);
 	}
 
 	public function delete($table, $id) {
-		return $this->db->$table->remove($id);
+		$res = $this->db->$table->remove($id);
+		return (object) array(
+			'query'=>'db.'.$table.'.delete('.json_encode($id).')', 
+			'id'=>$data['_id'],
+			'result'=>$res 
+		);
 	}
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
@@ -123,6 +142,34 @@ class Kecik_Mongo {
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		$res = $this->exec($query);
 		return $this->fetch($res, $callback);
+	}
+
+	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$this->_raw_res = $this->exec($query);
+
+		return $this;
+	}
+
+	public function each(\Closure $callable) {
+		$data = array();
+		if (!empty($this->_raw_res) && is_callable($callable)) {
+			$res = $this->_raw_res;
+			$this->_raw_res = NULL;
+			$data = $this->_raw_res['retval'];
+			foreach ($this->_raw_res['retval'] as $row) {
+				$callable((object) $row);
+			}
+		}
+
+		return (object) array(
+			'query' => $this->_query,
+			'result' => (object) array(
+				'num_rows' => $this->_num_rows,
+				'fields' => $this->_fields,
+				'data' => $data
+			)
+		);
 	}
 
 	public function fields($table) {

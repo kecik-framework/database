@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/database
  * @license		MIT
- * @version 	1.0.3
+ * @version 	1.1.0
  * @package		PostgrSQL
  **/
 class Kecik_PostgreSQL {
@@ -23,6 +23,10 @@ class Kecik_PostgreSQL {
 	private $_insert_id = null;
 
 	private $_joinFields = array();
+
+	private $_raw_res = NULL;
+
+	private $_query = '';
 
 	public function __construct() {
 
@@ -51,6 +55,7 @@ class Kecik_PostgreSQL {
 	}
 
 	public function exec($sql) {
+		$this->$_query = $sql;
 		$res = pg_query($this->dbcon, $sql);
 		if (!$res){
 			echo "<strong>Query: ".$sql."</strong><br />";
@@ -142,7 +147,11 @@ class Kecik_PostgreSQL {
 
 		$res = $this->exec($query);
 		$this->_insert_id = pg_last_oid($res);
-		return $res;
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$this->insert_id(),
+			'result'=>$res 
+		);
 	}
 
 	public function update($table, $id, $data) {
@@ -183,7 +192,11 @@ class Kecik_PostgreSQL {
 
 		$fieldsValues = implode(',', $fieldsValues);
 		$query = "UPDATE $table SET $fieldsValues $where";
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function delete($table, $id) {
@@ -210,7 +223,11 @@ class Kecik_PostgreSQL {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		$query = "DELETE FROM $table $where";
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
@@ -261,6 +278,92 @@ class Kecik_PostgreSQL {
 			echo pg_last_error($this->dbcon);
 		
 		return $ret;
+	}
+
+	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+		$this->_fields = null;
+        $this->_num_rows = 0;
+
+        if (isset($condition['join']) && count($condition['join']) > 0) {
+        	if (!isset($condition['select'])) $condition['select'] = array(array("$table.*"));
+
+        	$this->_joinFields = array();
+        	while (list($id, $join) = each($condition['join'])) {
+        		$this->_fields = '';
+        		$fields = $this->fields($join[1]);
+
+        		while (list($id, $field) = each($fields)) {
+        			$this->_joinFields["__$join[1]_$field->name"] = array($join[1], $field->name);
+        			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
+        		}
+        	}
+        	
+        	reset($condition['join']);
+        }
+
+		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		if ($this->_raw_res = $this->exec($query)){
+			$this->_fields = '';
+			$nfields = pg_field_num($res);
+			$fields = array();
+			for ($i=0; $i<$nfields; $i++) {
+				$field = $res->getColumnMeta($i);
+				$fields[] = (object) array(
+					'name' => pg_field_name($res , $i),
+					'type' => pg_field_type($res , $i),
+					'size' => pg_field_size($res, $i),
+					'table' => pg_field_table($res, $i)
+				);
+			}
+			$this->_fields = $fields;
+		}
+		else 
+			echo pg_last_error($this->dbcon);
+
+		return $this;
+	}
+
+	public function each(\Closure $callable) {
+		$data = array();
+		if (!empty($this->_raw_res) && is_callable($callable)) {
+			$res = $this->_raw_res;
+			$this->_raw_res = NULL;
+			$this->_num_rows = $res->num_rows;
+
+			$this->_num_rows = pg_num_rows($res);
+			while( $row = pg_fetch_object($res) ) {
+	            /*if (count($this->_joinFields) > 0) {
+	            	reset($this->_joinFields);
+	            	while (list($field, $join) = each($this->_joinFields)) {
+	            		if (isset($row->$field)) {
+	            			$modelJoin = $this->_joinFields[$field][0];
+	            			$realField = $this->_joinFields[$field][1];
+
+	            			if (!isset($row->$modelJoin)) $dataJoin = new stdclass;
+
+	            			$dataJoin->$realField = $row->$field;
+		            		unset($row->$field);
+			            	
+			            	$row->$modelJoin = $dataJoin;
+		            	}
+	            	}            		
+	            }*/
+
+	            $callable($row);
+	            array_push($data, $row);
+			}
+
+			pg_free_result($res);
+		}
+
+		return (object) array(
+			'query' => $this->_query,
+			'result' => (object) array(
+				'num_rows' => $this->_num_rows,
+				'fields' => $this->_fields,
+				'data' => $data
+			)
+		);
 	}
 
 	public function fields($table) {

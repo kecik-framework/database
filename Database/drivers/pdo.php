@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/database
  * @license		MIT
- * @version 	1.0.3
+ * @version 	1.1.0
  * @package		PDO
  **/
 class Kecik_PDO {
@@ -23,6 +23,10 @@ class Kecik_PDO {
 	private $_pk = '';
 
 	private $_joinFields = array();
+
+	private $_raw_res = NULL;
+
+	private $_query = '';
 
 	public function __construct() {
 
@@ -47,6 +51,7 @@ class Kecik_PDO {
 
 	public function exec($sql) {
 		try {
+			$this->$_query = $sql;
 			$res = $this->dbcon->query($sql);
 		} catch (PDOException $e) {
 			echo "<strong>Query: ".$sql."</strong><br />";
@@ -137,8 +142,11 @@ class Kecik_PDO {
 		$fields = implode(',', $fields);
 		$values = implode(',', $values);
 		$query = "INSERT INTO `$table` ($fields) VALUES ($values)";
-
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$this->inserts_id(),
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function update($table, $id, $data) {
@@ -184,8 +192,11 @@ class Kecik_PDO {
 
 		$fieldsValues = implode(',', $fieldsValues);
 		$query = "UPDATE $table SET $fieldsValues $where";
-		
-		return $this->dbcon->execute($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function delete($table, $id) {
@@ -218,7 +229,11 @@ class Kecik_PDO {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		$query = "DELETE FROM $table $where";
-		return $this->dbcon->execute($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
@@ -268,6 +283,92 @@ class Kecik_PDO {
 		}
 		
 		return $ret;
+	}
+
+	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+		$this->_fields = null;
+        $this->_num_rows = 0;
+
+		if (isset($condition['join']) && count($condition['join']) > 0) {
+        	if (!isset($condition['select'])) $condition['select'] = array(array("$table.*"));
+
+        	$this->_joinFields = array();
+        	while (list($id, $join) = each($condition['join'])) {
+        		$this->_fields = '';
+        		$fields = $this->fields($join[1]);
+
+        		while (list($id, $field) = each($fields)) {
+        			$this->_joinFields["__$join[1]_$field->name"] = array($join[1], $field->name);
+        			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
+        		}
+        	}
+        	
+        	reset($condition['join']);
+        }
+
+		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
+		try {
+			$this->_raw_res = $this->exec($query);
+			$this->_fields = '';
+			$nfields = $res->columnCount();
+			$fields = array();
+			for ($i=0; $i<$nfields; $i++) {
+				$field = $res->getColumnMeta($i);
+				$fields[] = (object) array(
+					'name' => $field['name'],
+					'type' => $field['native_type'],
+					'size' => $field['len'],
+					'table' => $field['table']
+				);
+			}
+			$this->_fields = $fields;
+		} catch(PDOException $e) {
+			echo $e->getMessage();
+		}
+
+		return $this;
+	}
+
+	public function each(\Closure $callable) {
+		$data = array();
+		if (!empty($this->_raw_res) && is_callable($callable)) {
+			$res = $this->_raw_res;
+			$this->_raw_res = NULL;
+			$this->_num_rows = $res->rowCount();
+
+        	$rows = $res->fetchAll(PDO::FETCH_OBJ);
+        	$data = $rows;
+        	foreach($rows as $row) {
+	            /*if (count($this->_joinFields) > 0) {
+	            	reset($this->_joinFields);
+	            	while (list($field, $join) = each($this->_joinFields)) {
+	            		if (isset($row->$field)) {
+	            			$modelJoin = $this->_joinFields[$field][0];
+	            			$realField = $this->_joinFields[$field][1];
+
+	            			if (!isset($row->$modelJoin)) $dataJoin = new stdclass;
+
+	            			$dataJoin->$realField = $row->$field;
+		            		unset($row->$field);
+
+			            	
+			            	$row->$modelJoin = $dataJoin;
+		            	}
+	            	}
+	            }*/
+
+	            $callable($row);
+        	}
+        }
+
+        return (object) array(
+			'query' => $this->_query,
+			'result' => (object) array(
+				'num_rows' => $this->_num_rows,
+				'fields' => $this->_fields,
+				'data' => $data
+			)
+		);
 	}
 
 	public function fields($table) {

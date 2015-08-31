@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/database
  * @license		MIT
- * @version 	1.0.3
+ * @version 	1.1.0
  * @package		MySQLi
  **/
 class Kecik_MySqli {
@@ -21,6 +21,10 @@ class Kecik_MySqli {
 	private $_pk = '';
 
 	private $_joinFields = array();
+
+	private $_raw_res = NULL;
+
+	private $_query = '';
 
 	public function __construct() {
 
@@ -49,6 +53,7 @@ class Kecik_MySqli {
 	}
 
 	public function exec($sql) {
+		$this->$_query = $sql;
 		$res = $this->dbcon->query($sql);
 		if (!$res){
 			echo "<strong>Query: ".$sql."</strong><br />";
@@ -144,7 +149,11 @@ class Kecik_MySqli {
 		$values = implode(',', $values);
 		$query = "INSERT INTO `$table` ($fields) VALUES ($values)";
 
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$this->insert_id(),
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function update($table, $id, $data) {
@@ -197,7 +206,11 @@ class Kecik_MySqli {
 		$fieldsValues = implode(',', $fieldsValues);
 		$query = "UPDATE `$table` SET $fieldsValues $where";
 
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function delete($table, $id) {
@@ -230,7 +243,11 @@ class Kecik_MySqli {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		$query = "DELETE FROM `$table` $where";
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
@@ -278,6 +295,91 @@ class Kecik_MySqli {
 
 
 		return $ret;
+	}
+
+	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+        $this->_fields = null;
+        $this->_num_rows = 0;
+
+        if (isset($condition['join']) && count($condition['join']) > 0) {
+        	if (!isset($condition['select'])) $condition['select'] = array(array("$table.*"));
+
+        	$this->_joinFields = array();
+        	while (list($id, $join) = each($condition['join'])) {
+        		$this->_fields = '';
+        		$fields = $this->fields($join[1]);
+
+        		while (list($id, $field) = each($fields)) {
+        			$this->_joinFields["__$join[1]_$field->name"] = array($join[1], $field->name);
+        			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
+        		}
+        	}
+
+        	reset($condition['join']);
+        }
+
+		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
+		if ($this->_raw_res = $this->exec($query)) {
+			$this->_fields = '';
+			$fields = $res->fetch_fields();
+			foreach ($fields as $field) {
+				$this->_fields[] = (object) array(
+					'name' => $field->name,
+					'type' => $field->type,
+					'size' => $field->max_length,
+					'table' => $field->table
+				);
+			}
+
+		} else
+			echo $this->dbcon->error;
+
+
+		return $this;
+	}
+
+	public function each(\Closure $callable) {
+		$data = array();
+		if (!empty($this->_raw_res) && is_callable($callable)) {
+			$res = $this->_raw_res;
+			$this->_raw_res = NULL;
+			$this->_num_rows = $res->num_rows;
+
+			while( $row = $res->fetch_object() ) {
+	            /*if (count($this->_joinFields) > 0) {
+	            	reset($this->_joinFields);
+	            	while (list($field, $join) = each($this->_joinFields)) {
+	            		if (isset($data->$field)) {
+	            			$modelJoin = $this->_joinFields[$field][0];
+	            			$realField = $this->_joinFields[$field][1];
+
+	            			if (!isset($row->$modelJoin)) $dataJoin = new stdclass;
+
+	            			$dataJoin->$realField = $row->$field;
+		            		//unset($row->$field);
+
+
+			            	$row->$modelJoin = $dataJoin;
+		            	}
+	            	}
+	            }
+				*/
+				
+				$callable($row);
+				array_push($data, $row);
+			}
+
+			$res->close();
+		}
+
+		return (object) array(
+			'query' => $this->_query,
+			'result' => (object) array(
+				'num_rows' => $this->_num_rows,
+				'fields' => $this->_fields,
+				'data' => $data
+			)
+		);
 	}
 
 	public function fields($table) {

@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/database
  * @license		MIT
- * @version 	1.0.3
+ * @version 	1.1.0
  * @package		Oracle
  **/
 class Kecik_Oci8 {
@@ -26,12 +26,16 @@ class Kecik_Oci8 {
 
 	private $_joinFields = array();
 
+	private $_raw_res = NULL;
+
+	private $_query = '';
+
 	public function __construct() {
 
 	}
 
 	public function connect($dsn, $dbname='', $hostname='', $username='root', $password='', $failover=FALSE, $charset='utf8') {
-		
+
 		$this->dbcon = @oci_connect(
 		    $username,
 		    $password,
@@ -45,16 +49,17 @@ class Kecik_Oci8 {
 	    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 			}
 		}
-		
+
 		$this->username = $username;
 		return $this->dbcon;
 	}
 
 	public function exec($sql) {
-		
+		$this->$_query = $sql;
+
 		$stid = oci_parse($this->dbcon, $sql);
 		@oci_bind_by_name($stid, ':ID', $this->_insert_id);
-		
+
 		if (!oci_execute($stid)) {
 			$e = oci_error();
 			echo "<strong>Query: ".$sql."</strong><br />";
@@ -98,12 +103,12 @@ class Kecik_Oci8 {
             			$dataJoin->$realField = $data->$field;
 	            		unset($data->$field);
 
-		            	
+
 		            	$data->$modelJoin = $dataJoin;
 	            	}
             	}
-            	
-            	$result[] = $data;	            		
+
+            	$result[] = $data;
             } else
 				$result[] = $data;
 		}
@@ -145,8 +150,11 @@ class Kecik_Oci8 {
 		else {
 			$query = "INSERT INTO \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" ($fields) VALUES ($values) RETURNING ".$this->_pk." into :id";
 		}
-
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$this->insert_id(),
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function update($table, $id, $data) {
@@ -154,7 +162,7 @@ class Kecik_Oci8 {
 		$and = array();
 
 		while(list($pk, $value) = each($id)) {
-			if (is_array($value) && $value[1] == FALSE) 
+			if (is_array($value) && $value[1] == FALSE)
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
@@ -186,7 +194,11 @@ class Kecik_Oci8 {
 
 		$fieldsValues = implode(',', $fieldsValues);
 		$query = "UPDATE \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" SET $fieldsValues $where";
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function delete($table, $id) {
@@ -213,7 +225,11 @@ class Kecik_Oci8 {
 			$where = 'WHERE '.implode(' AND ', $and);
 
 		$query = "DELETE FROM \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" $where";
-		return $this->exec($query);
+		return (object) array(
+			'query'=>$query, 
+			'id'=>$id,
+			'result'=>$this->exec($query) 
+		);
 	}
 
 	public function find($table, $condition=array(), $limit=array(), $order_by=array()) {
@@ -238,7 +254,7 @@ class Kecik_Oci8 {
         			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
         		}
         	}
-        	
+
         	reset($condition['join']);
         }
 
@@ -261,8 +277,94 @@ class Kecik_Oci8 {
 			$e = oci_error();
     		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
-		
+
 		return $ret;
+	}
+
+	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+		$this->_fields = null;
+        $this->_num_rows = 0;
+        
+        if (isset($condition['join']) && count($condition['join']) > 0) {
+        	if (!isset($condition['select'])) $condition['select'] = array(array("$table.*"));
+
+        	$this->_joinFields = array();
+        	while (list($id, $join) = each($condition['join'])) {
+        		$this->_fields = '';
+        		$fields = $this->fields($join[1]);
+
+        		while (list($id, $field) = each($fields)) {
+        			$this->_joinFields["__$join[1]_$field->name"] = array($join[1], $field->name);
+        			$condition['select'][] = array("$join[1].$field->name", 'as'=>"__$join[1]_$field->name");
+        		}
+        	}
+
+        	reset($condition['join']);
+        }
+
+		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		if ($this->_raw_res = $this->exec($query)) {
+			$this->_fields = '';
+			$nfields = oci_num_fields($res);
+			$fields = array();
+			for ($i=1; $i<=$nfields; $i++) {
+				$fields[] = (object) array(
+					'name' => oci_field_name($res, $i),
+					'type' => oci_field_type($res, $i),
+					'size' => oci_field_size($res, $i),
+					'table' => $table
+				);
+			}
+			$this->_fields = $fields;
+		} else {
+			$e = oci_error();
+    		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+		}
+
+		return $this;
+	}
+
+	public function each(\Closure $callable) {
+		$data = array();
+		if (!empty($this->_raw_res) && is_callable($callable)) {
+			$res = $this->_raw_res;
+			$this->_raw_res = NULL;
+			$this->_num_rows = oci_num_rows($res);
+
+			while (($row = oci_fetch_object($res)) != false) {
+				/*if (count($this->_joinFields) > 0) {
+	            	reset($this->_joinFields);
+	            	while (list($field, $join) = each($this->_joinFields)) {
+	            		if (isset($row->$field)) {
+	            			$modelJoin = $this->_joinFields[$field][0];
+	            			$realField = $this->_joinFields[$field][1];
+
+	            			if (!isset($row->$modelJoin)) $dataJoin = new stdclass;
+
+	            			$dataJoin->$realField = $row->$field;
+		            		unset($row->$field);
+
+
+			            	$row->$modelJoin = $dataJoin;
+		            	}
+	            	}
+	            }*/
+
+	            $callable($row);
+	            array_push($data, $row)
+			}
+
+			oci_free_statement($res);
+		}
+
+		return (object) array(
+			'query' => $this->_query,
+			'result' => (object) array(
+				'num_rows' => $this->_num_rows,
+				'fields' => $this->_fields,
+				'data' => $data
+			)
+		);
 	}
 
 	public function fields($table) {
@@ -285,8 +387,8 @@ class Kecik_Oci8 {
 				$e = oci_error();
     			trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 			}
-		} 
-			
+		}
+
 		return $this->_fields;
 	}
 
@@ -310,7 +412,7 @@ class QueryHelper {
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $selectlist) = each($list)) {
 				while(list($id, $fields) = each($selectlist)) {
-					
+
 
 					if (is_int($id)) {
 						if (count($selectlist)>1)
@@ -326,7 +428,7 @@ class QueryHelper {
 					}
 				}
 			}
-			
+
 			$ret = implode(', ', $select).' ';
 		}
 
@@ -342,14 +444,14 @@ class QueryHelper {
 
 		if (is_array($list) && count($list) > 0) {
 			while (list($idx, $wherelist) = each($list)) {
-				
+
 				//sub operator
 				if ( is_string($idx) && in_array($idx, $opt)) {
 					$where[$idx][] .= '('.self::where($wherelist, $idx, $idx_where+1, $idx).')';
 					$optrow[] = $idx;
 				//logical
 				} elseif (is_array($wherelist)) {
-					
+
 					if (count($wherelist) == 1 && isset($wherelist[0])) {
 						$where[$group][] = $wherelist[0];
 					} else {
@@ -357,7 +459,7 @@ class QueryHelper {
 						while (list($cond, $val) = each($wherelist)) {
 							// if Count item 1
 							if (count($wherelist) == 1) {
-								
+
 								for( $i=0; $i <= substr_count($cond, '?'); $i++) {
 									$pos = strpos($cond, '?');
 									$tmp = substr($cond, 0, $pos);
@@ -369,7 +471,7 @@ class QueryHelper {
 								$where[$group][] = $cond;
 							// if Count item 2
 							} elseif (count($wherelist) == 2) {
-								
+
 								if (is_array($val)) {
 									while(list($condkey, $condval) = each($val)) {
 										for( $i=0; $i <= substr_count($cond, '?'); $i++) {
@@ -432,7 +534,7 @@ class QueryHelper {
 										$cond = $val;
 									}
 								}
-								
+
 								$where[$group][] = $condfield.$condopt.$cond;
 								$condfield = '';
 							}
@@ -446,7 +548,7 @@ class QueryHelper {
 				$ret = ' WHERE ';
 
 			if (count($optrow) > 0) {
-				
+
 				while (list($id, $opt) = each($optrow)) {
 					$wherestr .= implode(' '.strtoupper($opt).' ', $where[$opt]);
 					if ($id == 0 && $idx_where == 2) $wherestr .= ' '.strtoupper($group_prev).' ';
@@ -463,7 +565,7 @@ class QueryHelper {
 	public static function group_by($dbcon, $list) {
 		$ret = '';
 		$group_by = [];
-		
+
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $group_bylist) = each($list)) {
 				while(list($id, $fields) = each($group_bylist)) {
@@ -481,11 +583,11 @@ class QueryHelper {
 						else
 							$group_by[] = $fields;
 
-					} 
+					}
 
 				}
 			}
-			
+
 			$ret = ' GROUP BY '.implode(', ', $group_by).' ';
 		}
 
@@ -511,7 +613,7 @@ class QueryHelper {
 
 							if (strpos($on2, '.') === false)
 								$on2 = "$joinlist[1].$on2";
-							
+
 							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $on1 = $on2";
 						} else
 							$join[] = strtoupper($joinlist[0])." JOIN $joinlist[1] ON $joinlist[1].$on1 = $table.$on2";
@@ -529,7 +631,7 @@ class QueryHelper {
 
 	public static function union($list) {
 		$ret = '';
-		
+
 		if (is_array($list) && count($list) > 0) {
 			$ret = ' UNION '.implode(', ', $list);
 		}
@@ -547,7 +649,7 @@ class QueryHelper {
 		$union = '';
 
 		if (is_array($filter) && count($filter) > 0) {
-			
+
 			while(list($syntax, $query) = each($filter)) {
 				$syntax = strtoupper($syntax);
 
@@ -555,7 +657,7 @@ class QueryHelper {
 					case 'SELECT':
 						$select .= self::select($query);
 					break;
-					
+
 					case 'WHERE':
 						$where = self::where($query);
 					break;
@@ -577,7 +679,7 @@ class QueryHelper {
 					break;
 				}
 			}
-			
+
 		}
 
 		if (is_array($lmt) && count($lmt) > 0) {
@@ -619,11 +721,11 @@ class QueryHelper {
 
 
 		$select = (empty($select))? '* ':$select;
-		
+
 		$sql = 'SELECT '.$select.$from.$where.$group_by.$order_by.$union;
 		if (!empty($limit))
 			$sql = str_replace(':sql:', $sql, $limit);
-		
+
 		return $sql;
 	}
 

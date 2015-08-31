@@ -6,7 +6,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.io/database
  * @license		MIT
- * @version 	1.0.2
+ * @version 	1.1.0
  * @package		Kecik\Database
  **/
 namespace Kecik;
@@ -219,6 +219,12 @@ class Database {
 		$table = (!empty($this->table))?$this->table:$table;
 
 		return $this->db->find($table, $condition, $limit, $order_by);
+	}
+
+	public function raw_find() {
+		$table = (!empty($this->table))?$this->table:$table;
+		
+		return $this->db->raw_find($table, $condition, $limit, $order_by);
 	}
 
 	public function fields() {
