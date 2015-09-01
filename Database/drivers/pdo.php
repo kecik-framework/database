@@ -51,7 +51,7 @@ class Kecik_PDO {
 
 	public function exec($sql) {
 		try {
-			$this->$_query = $sql;
+			$this->_query = $sql;
 			$res = $this->dbcon->query($sql);
 		} catch (PDOException $e) {
 			echo "<strong>Query: ".$sql."</strong><br />";

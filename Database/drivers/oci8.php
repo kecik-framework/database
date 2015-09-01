@@ -55,7 +55,7 @@ class Kecik_Oci8 {
 	}
 
 	public function exec($sql) {
-		$this->$_query = $sql;
+		$this->_query = $sql;
 
 		$stid = oci_parse($this->dbcon, $sql);
 		@oci_bind_by_name($stid, ':ID', $this->_insert_id);

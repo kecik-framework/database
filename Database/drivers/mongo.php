@@ -58,7 +58,7 @@ class Kecik_Mongo {
 	}
 
 	public function exec($sql) {
-		$this->$_query = $sql;
+		$this->_query = $sql;
 		$this->lastSQL = $sql;
 		$res = $this->db->execute($sql);
 		if (!$res) {

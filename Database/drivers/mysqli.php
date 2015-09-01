@@ -53,7 +53,7 @@ class Kecik_MySqli {
 	}
 
 	public function exec($sql) {
-		$this->$_query = $sql;
+		$this->_query = $sql;
 		$res = $this->dbcon->query($sql);
 		if (!$res){
 			echo "<strong>Query: ".$sql."</strong><br />";

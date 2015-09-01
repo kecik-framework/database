@@ -57,7 +57,7 @@ class Kecik_SQLite3 extends SQLite3 {
 	public function fetch($res) {
 		$result = array();
 		$this->_num_rows = $res->numRows();
-		while ($data = $res->fetchArray()) {
+		while ($data = $res->fetchArray())
 		    $result[] = (object) $data;
 
 		return $result;

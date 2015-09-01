@@ -55,7 +55,7 @@ class Kecik_PostgreSQL {
 	}
 
 	public function exec($sql) {
-		$this->$_query = $sql;
+		$this->_query = $sql;
 		$res = pg_query($this->dbcon, $sql);
 		if (!$res){
 			echo "<strong>Query: ".$sql."</strong><br />";
