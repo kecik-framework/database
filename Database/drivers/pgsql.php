@@ -90,19 +90,22 @@ class Kecik_PostgreSQL {
             if (count($this->_joinFields) > 0) {
             	reset($this->_joinFields);
             	while (list($field, $join) = each($this->_joinFields)) {
+            		
             		if (isset($data->$field)) {
             			$modelJoin = $this->_joinFields[$field][0];
             			$realField = $this->_joinFields[$field][1];
 
-            			if (!isset($data->$modelJoin)) $dataJoin = new stdclass;
+            			if (!isset($dataJoin)) {
+            				$dataJoin = new \stdClass;
+            				$dataJoin->$realField = $data->$field;
+            				$data->$modelJoin = $dataJoin;
+            			} else
+            				$data->$modelJoin->$realField = $data->$field;
 
-            			$dataJoin->$realField = $data->$field;
-	            		unset($data->$field);
-
-		            	
-		            	$data->$modelJoin = $dataJoin;
+            			unset($data->$field);
 	            	}
             	}
+            	unset($dataJoin);
             	
             	$result[] = $data;	            		
             } else
