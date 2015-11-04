@@ -313,10 +313,10 @@ class Kecik_PDO {
 		try {
 			$this->_raw_res = $this->exec($query);
 			$this->_fields = '';
-			$nfields = $res->columnCount();
+			$nfields = $this->_raw_res->columnCount();
 			$fields = array();
 			for ($i=0; $i<$nfields; $i++) {
-				$field = $res->getColumnMeta($i);
+				$field = $this->_raw_res->getColumnMeta($i);
 				$fields[] = (object) array(
 					'name' => $field['name'],
 					'type' => $field['native_type'],

@@ -324,7 +324,7 @@ class Kecik_MySqli {
 		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)) {
 			$this->_fields = '';
-			$fields = $res->fetch_fields();
+			$fields = $this->_raw_res->fetch_fields();
 			foreach ($fields as $field) {
 				$this->_fields[] = (object) array(
 					'name' => $field->name,

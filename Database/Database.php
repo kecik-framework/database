@@ -221,7 +221,7 @@ class Database {
 		return $this->db->find($table, $condition, $limit, $order_by);
 	}
 
-	public function raw_find() {
+	public function raw_find($condition=[], $limit=[], $order_by=[],$table='') {
 		$table = (!empty($this->table))?$this->table:$table;
 		
 		return $this->db->raw_find($table, $condition, $limit, $order_by);
