@@ -109,9 +109,9 @@ class Kecik_Mongo {
 		$res = $this->db->$table->insert($data);
 		$this->_insert_id = $data['_id'];
 		return (object) array(
-			'query'=>'db.'.$table.'.insert('.json_encode($data).')', 
-			'id'=>$data['_id'], 
-			'result'=>$res 
+			'query'=>'db.'.$table.'.insert('.json_encode($data).')',  
+			'result'=>$res,
+			'id'=>$data['_id']
 		);
 	}
 
@@ -119,8 +119,8 @@ class Kecik_Mongo {
 		$res = $this->db->$table->update($id, array('$set'=>$data));
 		return (object) array(
 			'query'=>'db.'.$table.'.update('.json_encode($id).', '.json_encode($data).')', 
-			'id'=>$data['_id'],
-			'result'=>$res 
+			'result'=>$res,
+			'id'=>$data['_id']
 		);
 	}
 

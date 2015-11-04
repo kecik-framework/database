@@ -147,8 +147,8 @@ class Kecik_PDO {
 		$query = "INSERT INTO `$table` ($fields) VALUES ($values)";
 		return (object) array(
 			'query'=>$query, 
-			'id'=>$this->inserts_id(),
-			'result'=>$this->exec($query) 
+			'result'=>$this->exec($query),
+			'id'=>$this->inserts_id()
 		);
 	}
 
@@ -197,8 +197,8 @@ class Kecik_PDO {
 		$query = "UPDATE $table SET $fieldsValues $where";
 		return (object) array(
 			'query'=>$query, 
-			'id'=>$id,
-			'result'=>$this->exec($query) 
+			'result'=>$this->exec($query),
+			'id'=>$id
 		);
 	}
 

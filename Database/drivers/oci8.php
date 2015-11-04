@@ -155,8 +155,8 @@ class Kecik_Oci8 {
 		}
 		return (object) array(
 			'query'=>$query, 
-			'id'=>$this->insert_id(),
-			'result'=>$this->exec($query) 
+			'result'=>$this->exec($query),
+			'id'=>$this->insert_id()
 		);
 	}
 
@@ -199,8 +199,8 @@ class Kecik_Oci8 {
 		$query = "UPDATE \"".strtoupper($this->username)."\".\"".strtoupper($table)."\" SET $fieldsValues $where";
 		return (object) array(
 			'query'=>$query, 
-			'id'=>$id,
-			'result'=>$this->exec($query) 
+			'result'=>$this->exec($query),
+			'id'=>$id
 		);
 	}
 

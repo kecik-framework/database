@@ -152,8 +152,8 @@ class Kecik_PostgreSQL {
 		$this->_insert_id = pg_last_oid($res);
 		return (object) array(
 			'query'=>$query, 
-			'id'=>$this->insert_id(),
-			'result'=>$res 
+			'result'=>$res,
+			'id'=>$this->insert_id()
 		);
 	}
 
@@ -197,8 +197,8 @@ class Kecik_PostgreSQL {
 		$query = "UPDATE $table SET $fieldsValues $where";
 		return (object) array(
 			'query'=>$query, 
-			'id'=>$id,
-			'result'=>$this->exec($query) 
+			'result'=>$this->exec($query),
+			'id'=>$id
 		);
 	}
 
