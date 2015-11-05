@@ -28,6 +28,8 @@ class Kecik_PDO {
 
 	private $_query = '';
 
+	private $_raw_callback;
+
 	public function __construct() {
 
 	}
@@ -292,6 +294,11 @@ class Kecik_PDO {
 		$this->_fields = null;
         $this->_num_rows = 0;
 
+        if (isset($condition['callback'])) {
+            $this->_raw_callback = $condition['callback'];
+            unset($condition['callback']);
+        }
+
 		if (isset($condition['join']) && count($condition['join']) > 0) {
         	if (!isset($condition['select'])) $condition['select'] = array(array("$table.*"));
 
@@ -339,26 +346,46 @@ class Kecik_PDO {
 			$this->_raw_res = NULL;
 			$this->_num_rows = $res->rowCount();
 
+			$callback_is = 0;
+	        if (is_callable($this->_raw_callback))
+	            $callback_is = 1;
+	        elseif (is_array($this->_raw_callback))
+	            $callback_is = 2;
+
+	        $callback = $this->_raw_callback;
+
         	$rows = $res->fetchAll(PDO::FETCH_OBJ);
         	$data = $rows;
         	foreach($rows as $row) {
-	            /*if (count($this->_joinFields) > 0) {
+        		if ($callback_is  == 1) {
+                	while(list($field, $value) = each($row))
+	                    $row->$field = $callback($row->$field, $row);
+	               
+	            } elseif ($callback_is == 2) {
+	            	reset($callback);
+	                while(list($field, $func) = each($callback)) {
+	                    if (isset($row->$field))
+	                        $row->$field = $func($row->$field, $row);
+	                }
+	            }
+
+	            if (count($this->_joinFields) > 0) {;
 	            	reset($this->_joinFields);
 	            	while (list($field, $join) = each($this->_joinFields)) {
 	            		if (isset($row->$field)) {
 	            			$modelJoin = $this->_joinFields[$field][0];
 	            			$realField = $this->_joinFields[$field][1];
 
-	            			if (!isset($row->$modelJoin)) $dataJoin = new stdclass;
+	            			if (!isset($dataJoin->$realField)) $dataJoin = new stdclass;
 
 	            			$dataJoin->$realField = $row->$field;
 		            		unset($row->$field);
 
-			            	
+
 			            	$row->$modelJoin = $dataJoin;
 		            	}
 	            	}
-	            }*/
+	            }
 
 	            $callable($row);
         	}

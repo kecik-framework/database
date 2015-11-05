@@ -29,6 +29,8 @@ class Kecik_Mongo {
 
 	private $_query = '';
 	
+	private $_raw_callback;
+
 	public function __construct() {
 
 	}
@@ -145,6 +147,11 @@ class Kecik_Mongo {
 	}
 
 	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+		if (isset($condition['callback'])) {
+            $this->_raw_callback = $condition['callback'];
+            unset($condition['callback']);
+        }
+
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		$this->_raw_res = $this->exec($query);
 
@@ -157,7 +164,27 @@ class Kecik_Mongo {
 			$res = $this->_raw_res;
 			$this->_raw_res = NULL;
 			$data = $this->_raw_res['retval'];
+
+			$callback_is = 0;
+	        if (is_callable($this->_raw_callback))
+	            $callback_is = 1;
+	        elseif (is_array($this->_raw_callback))
+	            $callback_is = 2;
+
+	        $callback = $this->_raw_callback;
 			foreach ($this->_raw_res['retval'] as $row) {
+				if ($callback_is  == 1) {
+                	while(list($field, $value) = each($row))
+	                    $row->$field = $callback($row->$field, $row);
+	               
+	            } elseif ($callback_is == 2) {
+	            	reset($callback);
+	                while(list($field, $func) = each($callback)) {
+	                    if (isset($row->$field))
+	                        $row->$field = $func($row->$field, $row);
+	                }
+	            }
+	            
 				$callable((object) $row);
 			}
 		}
