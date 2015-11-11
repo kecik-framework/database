@@ -98,7 +98,7 @@ class Kecik_PDO {
 	            			$modelJoin = $this->_joinFields[$field][0];
 	            			$realField = $this->_joinFields[$field][1];
 
-	            			if (!isset($dataJoin)) {
+	            			if (!isset($data->$modelJoin)) {
 	            				$dataJoin = new \stdClass;
 	            				$dataJoin->$realField = $data->$field;
 	            				$data->$modelJoin = $dataJoin;
