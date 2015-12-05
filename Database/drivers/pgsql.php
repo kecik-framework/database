@@ -40,7 +40,7 @@ class Kecik_PostgreSQL {
 		$password = (empty($password))?'':"password=$password";
 		$dbname   = (empty($dbname))?'':"dbname=$dbname";
 		if (empty($dsn))
-			$conn_string = "$hostname port=5432 $dbname $username $password options='--client_encoding=$chartset'";
+			$conn_string = "$hostname port=5432 $dbname $username $password options='--client_encoding=$charset'";
 		else
 			$conn_string = $dsn;
 
@@ -265,10 +265,9 @@ class Kecik_PostgreSQL {
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)){
 			$this->_fields = '';
-			$nfields = pg_field_num($res);
+			$nfields = pg_num_fields($res);
 			$fields = array();
 			for ($i=0; $i<$nfields; $i++) {
-				$field = $res->getColumnMeta($i);
 				$fields[] = (object) array(
 					'name' => pg_field_name($res , $i),
 					'type' => pg_field_type($res , $i),
