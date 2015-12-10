@@ -269,6 +269,7 @@ class Kecik_PDO {
 		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
 		try {
 			$res = $this->exec($query);
+			$this->_num_rows = $res->rowCount();
 			$this->_fields = '';
 			$nfields = $res->columnCount();
 			$fields = array();
@@ -319,6 +320,7 @@ class Kecik_PDO {
 		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
 		try {
 			$this->_raw_res = $this->exec($query);
+			$this->_num_rows = $this->_raw_res->rowCount();
 			$this->_fields = '';
 			$nfields = $this->_raw_res->columnCount();
 			$fields = array();
@@ -344,7 +346,6 @@ class Kecik_PDO {
 		if (!empty($this->_raw_res) && is_callable($callable)) {
 			$res = $this->_raw_res;
 			$this->_raw_res = NULL;
-			$this->_num_rows = $res->rowCount();
 
 			$callback_is = 0;
 	        if (is_callable($this->_raw_callback))

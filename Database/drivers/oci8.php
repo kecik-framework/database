@@ -265,6 +265,7 @@ class Kecik_Oci8 {
 
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)) {
+			$this->_num_rows = oci_num_rows($res);
 			$this->_fields = '';
 			$nfields = oci_num_fields($res);
 			$fields = array();
@@ -314,6 +315,7 @@ class Kecik_Oci8 {
 
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)) {
+			$this->_num_rows = oci_num_rows($this->_raw_res);
 			$this->_fields = '';
 			$nfields = oci_num_fields($this->_raw_res);
 			$fields = array();
@@ -339,7 +341,6 @@ class Kecik_Oci8 {
 		if (!empty($this->_raw_res) && is_callable($callable)) {
 			$res = $this->_raw_res;
 			$this->_raw_res = NULL;
-			$this->_num_rows = oci_num_rows($res);
 
 			$callback_is = 0;
 	        if (is_callable($this->_raw_callback))

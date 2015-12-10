@@ -263,7 +263,8 @@ class Kecik_PostgreSQL {
         }
 
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
-		if ($res = $this->exec($query)){
+		if ($res = $this->exec($query)) {
+			$this->_num_rows = pg_num_rows($res);
 			$this->_fields = '';
 			$nfields = pg_num_fields($res);
 			$fields = array();
@@ -311,7 +312,8 @@ class Kecik_PostgreSQL {
         }
 
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
-		if ($this->_raw_res = $this->exec($query)){
+		if ($this->_raw_res = $this->exec($query)) {
+			$this->_num_rows = pg_num_rows($this->_raw_res);
 			$this->_fields = '';
 			$nfields = pg_num_fields($this->_raw_res);
 			$fields = array();
@@ -336,7 +338,6 @@ class Kecik_PostgreSQL {
 		if (!empty($this->_raw_res) && is_callable($callable)) {
 			$res = $this->_raw_res;
 			$this->_raw_res = NULL;
-			$this->_num_rows = $res->num_rows;
 
 			$callback_is = 0;
 	        if (is_callable($this->_raw_callback))

@@ -298,6 +298,7 @@ class Kecik_MsSQL {
 
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)){
+			$this->_num_rows = sqlsrv_num_rows($res);
 			$this->_fields = '';
 			$fields = array();
 			foreach( sqlsrv_field_metadata( $res ) as $field ) {
@@ -344,7 +345,8 @@ class Kecik_MsSQL {
         }
 
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
-		if ($this->_raw_res = $this->exec($query)){
+		if ($this->_raw_res = $this->exec($query)) {
+			$this->_num_rows = sqlsrv_num_rows($this->_raw_res);
 			$this->_fields = '';
 			$fields = array();
 			foreach( sqlsrv_field_metadata( $this->_raw_res ) as $field ) {
@@ -368,7 +370,6 @@ class Kecik_MsSQL {
 		if (!empty($this->_raw_res) && is_callable($callable)) {
 			$res = $this->_raw_res;
 			$this->_raw_res = NULL;
-			$this->_num_rows = $res->num_rows;
 
 			$callback_is = 0;
 	        if (is_callable($this->_raw_callback))

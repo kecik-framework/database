@@ -284,6 +284,7 @@ class Kecik_MySqli {
 
 		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)) {
+			$this->_num_rows = $res->num_rows;
 			$this->_fields = '';
 			$fields = $res->fetch_fields();
 			foreach ($fields as $field) {
@@ -330,6 +331,7 @@ class Kecik_MySqli {
 
 		$query = QueryHelper::find($this->dbcon, $table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)) {
+			$this->_num_rows = $this->_raw_res->num_rows;
 			$this->_fields = '';
 			$fields = $this->_raw_res->fetch_fields();
 			foreach ($fields as $field) {
@@ -353,7 +355,6 @@ class Kecik_MySqli {
 		if (!empty($this->_raw_res) && is_callable($callable)) {
 			$res = $this->_raw_res;
 			$this->_raw_res = NULL;
-			$this->_num_rows = $res->num_rows;
 
 			$callback_is = 0;
 	        if (is_callable($this->_raw_callback))
