@@ -313,10 +313,9 @@ class Kecik_PostgreSQL {
 		$query = QueryHelper::find($table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)){
 			$this->_fields = '';
-			$nfields = pg_field_num($this->_raw_res);
+			$nfields = pg_num_fields($this->_raw_res);
 			$fields = array();
 			for ($i=0; $i<$nfields; $i++) {
-				$field = $this->_raw_res->getColumnMeta($i);
 				$fields[] = (object) array(
 					'name' => pg_field_name($this->_raw_res , $i),
 					'type' => pg_field_type($this->_raw_res , $i),
@@ -400,10 +399,9 @@ class Kecik_PostgreSQL {
 		if (empty($this->_fields)) {
 			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
 			if ($res = $this->exec($query)) {
-				$nfields = pg_field_num($res);
+				$nfields = pg_num_fields($res);
 				$fields = array();
 				for ($i=0; $i<$nfields; $i++) {
-					$field = $res->getColumnMeta($i);
 					$fields[] = (object) array(
 						'name' => pg_field_name($res , $i),
 						'type' => pg_field_type($res , $i),
