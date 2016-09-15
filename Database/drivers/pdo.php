@@ -137,7 +137,7 @@ class Kecik_PDO {
 				$values[] = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$values[] = $value;
@@ -169,7 +169,7 @@ class Kecik_PDO {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -188,7 +188,7 @@ class Kecik_PDO {
 				$fieldsValues[] = "$field=".$value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$fieldsValues[] = "$field=$value";
@@ -219,7 +219,7 @@ class Kecik_PDO {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -266,7 +266,7 @@ class Kecik_PDO {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
+		$query = QueryHelperPDO::find($this->driver, $table, $condition, $limit, $order_by);
 		try {
 			$res = $this->exec($query);
 			$this->_num_rows = $res->rowCount();
@@ -317,7 +317,7 @@ class Kecik_PDO {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($this->driver, $table, $condition, $limit, $order_by);
+		$query = QueryHelperPDO::find($this->driver, $table, $condition, $limit, $order_by);
 		try {
 			$this->_raw_res = $this->exec($query);
 			$this->_num_rows = $this->_raw_res->rowCount();
@@ -382,8 +382,10 @@ class Kecik_PDO {
 	            			$dataJoin->$realField = $row->$field;
 		            		unset($row->$field);
 
+                            if (!empty($modelJoin ) && $this->_joinFields) {
+                                $row->$modelJoin = $dataJoin;
+                            }
 
-			            	$row->$modelJoin = $dataJoin;
 		            	}
 	            	}
 	            }
@@ -404,7 +406,7 @@ class Kecik_PDO {
 
 	public function fields($table) {
 		if (empty($this->_fields)) {
-			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			$query = QueryHelperPDO::find($this->dbcon, $table, array(), array(1), array());
 			if ($res = $this->exec($query)) {
 				$nfields = $res->columnCount();
 				$fields = array();
@@ -441,9 +443,9 @@ class Kecik_PDO {
 	}
 }
 
-class QueryHelper {
+class QueryHelperPDO {
 	public static function select($list) {
-		$select = [];
+		$select = array();
 
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $selectlist) = each($list)) {
@@ -473,9 +475,9 @@ class QueryHelper {
 
 	public static function where($list, $group='and', $idx_where=1, $group_prev='') {
 		$ret = '';
-		$where = ['and'=>[], 'or'=>[]];
-		$opt = ['and', 'or'];
-		$optrow = [];
+		$where = array('and'=>array(), 'or'=>array());
+		$opt = array('and', 'or');
+		$optrow = array();
 		$wherestr = '';
 
 		if (is_array($list) && count($list) > 0) {
@@ -563,7 +565,7 @@ class QueryHelper {
 												$val = '('.implode(', ', $val).')';
 										} else {
 											$val = addslashes($val);
-											if (!is_numeric($val))
+											if (gettype($val) == 'string')
 												$val = "'$val'";
 										}
 
@@ -600,7 +602,7 @@ class QueryHelper {
 
 	public static function group_by($dbcon, $list) {
 		$ret = '';
-		$group_by = [];
+		$group_by = array();
 		
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $group_bylist) = each($list)) {
@@ -632,7 +634,7 @@ class QueryHelper {
 
 	public static function join($table, $list) {
 		$ret = '';
-		$join = [];
+		$join = array();
 		if (is_array($list) && count($list) > 0) {
 			while (list($idx, $joinlist) = each($list)) {
 				if (count($joinlist) == 2)
@@ -739,7 +741,7 @@ class QueryHelper {
 		}
 
 		if (is_array($odr_by) && count($odr_by) > 0) {
-			$ord = ['asc'=>[], 'desc'=>[]];
+			$ord = array('asc'=>array(), 'desc'=>array());
 			while(list($sort, $fields) = each($odr_by)) {
 				if (strtoupper($sort) == 'ASC') {
 					$ord['asc'][] = implode(', ', $fields).' ASC';
@@ -750,7 +752,7 @@ class QueryHelper {
 			}
 
 			if (count($ord['asc']) > 0 || count($ord['desc'])) {
-				$order = [];
+				$order = array();
 				if (count( $ord['asc'] ) > 0)
 					$order[] .= implode(', ', $ord['asc']).' ';
 				if (count( $ord['desc'] ) > 0)

@@ -72,7 +72,7 @@ class Kecik_MsSQL {
 		    $hostname,
 		    $connectionInfo
 		);
-
+        
 		if ($failover === FALSE) {
 			if ( !$this->dbcon ) {
 			    header('X-Error-Message: Fail Connecting', true, 500);
@@ -167,7 +167,7 @@ class Kecik_MsSQL {
 				$values[] = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$values[] = $value;
@@ -180,9 +180,9 @@ class Kecik_MsSQL {
 
 		$res = $this->exec($query);
 
-		sqlsrv_next_result($resource); 
-		sqlsrv_fetch($resource); 
-		$this->_insert_id = sqlsrv_get_field($resource, 0);
+		sqlsrv_next_result($res);
+		sqlsrv_fetch($res);
+		$this->_insert_id = sqlsrv_get_field($res, 0);
 		return (object) array(
 			'query'=>$query, 
 			'result'=>$res,
@@ -200,7 +200,7 @@ class Kecik_MsSQL {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -219,7 +219,7 @@ class Kecik_MsSQL {
 				$fieldsValues[] = "#field=".$value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$fieldsValues[] = "$field=".$value;
@@ -244,7 +244,7 @@ class Kecik_MsSQL {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -271,6 +271,7 @@ class Kecik_MsSQL {
 		$callback = null;
 		$this->_fields = null;
         $this->_num_rows = 0;
+
         if (isset($condition['callback'])) {
             $callback = $condition['callback'];
             unset($condition['callback']);
@@ -294,9 +295,9 @@ class Kecik_MsSQL {
         }
 
         $fields = $this->fields($table);
-        QueryHelper::$select_limit = $fields[0]->name;
+        QueryHelperSQLSrv::$select_limit = $fields[0]->name;
 
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelperSQLSrv::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)){
 			$this->_num_rows = sqlsrv_num_rows($res);
 			$this->_fields = '';
@@ -344,7 +345,7 @@ class Kecik_MsSQL {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelperSQLSrv::find($table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)) {
 			$this->_num_rows = sqlsrv_num_rows($this->_raw_res);
 			$this->_fields = '';
@@ -405,8 +406,10 @@ class Kecik_MsSQL {
 	            			$dataJoin->$realField = $row->$field;
 		            		unset($row->$field);
 
+                            if (!empty($modelJoin ) && $this->_joinFields) {
+                                $row->$modelJoin = $dataJoin;
+                            }
 
-			            	$row->$modelJoin = $dataJoin;
 		            	}
 	            	}
 	            }
@@ -463,11 +466,11 @@ class Kecik_MsSQL {
 	}
 }
 
-class QueryHelper {
+class QueryHelperSQLSrv {
 	public static $select_limit = '';
 
 	public static function select($list) {
-		$select = [];
+		$select = array();
 
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $selectlist) = each($list)) {
@@ -497,9 +500,9 @@ class QueryHelper {
 
 	public static function where($list, $group='and', $idx_where=1, $group_prev='') {
 		$ret = '';
-		$where = ['and'=>[], 'or'=>[]];
-		$opt = ['and', 'or'];
-		$optrow = [];
+		$where = array('and'=>array(), 'or'=>array());
+		$opt = array('and', 'or');
+		$optrow = array();
 		$wherestr = '';
 
 		if (is_array($list) && count($list) > 0) {
@@ -548,8 +551,8 @@ class QueryHelper {
 										continue;
 									} else {
 										$val = addslashes($val);
-										if (!is_numeric($val))
-											$val = "'$val'";
+										if (gettype($val) == 'string')
+ 											$val = "'$val'";
 
 										$cond = $val;
 									}
@@ -591,8 +594,8 @@ class QueryHelper {
 												$val = '('.implode(', ', $val).')';
 										} else {
 											$val = addslashes($val);
-											if (!is_numeric($val))
-												$val = "'$val'";
+											if (gettype($val) == 'string')
+ 												$val = "'$val'";
 										}
 
 										$cond = $val;
@@ -626,9 +629,9 @@ class QueryHelper {
 		return $ret;
 	}
 
-	public static function group_by($dbcon, $list) {
+	public static function group_by($list) {
 		$ret = '';
-		$group_by = [];
+		$group_by = array();
 		
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $group_bylist) = each($list)) {
@@ -660,7 +663,7 @@ class QueryHelper {
 
 	public static function join($table, $list) {
 		$ret = '';
-		$join = [];
+		$join = array();
 		if (is_array($list) && count($list) > 0) {
 			while (list($idx, $joinlist) = each($list)) {
 				if (count($joinlist) == 2)
@@ -727,7 +730,7 @@ class QueryHelper {
 					break;
 
 					case 'GROUP BY':
-						$group_by = self::group_by($dbcon, $query);
+						$group_by = self::group_by($query);
 					break;
 
 					case 'JOIN':
@@ -755,7 +758,7 @@ class QueryHelper {
 		}
 
 		if (is_array($odr_by) && count($odr_by) > 0) {
-			$ord = ['asc'=>[], 'desc'=>[]];
+			$ord = array('asc'=>array(), 'desc'=>array());
 			while(list($sort, $fields) = each($odr_by)) {
 				if (strtoupper($sort) == 'ASC') {
 					$ord['asc'][] = implode(', ', $fields).' ASC';

@@ -133,7 +133,7 @@ class Kecik_SQLite {
 		$ret = array();
 		$query = "SELECT ";
 		$query .= (empty($this->_select))?'* ':$this->_select;
-		$query .="FROM $table ";
+		$query .= "FROM $table ";
 		if ($res = $this->exec($query))
 			$ret = $this->fetch($res);
 		else

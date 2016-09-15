@@ -139,7 +139,7 @@ class Kecik_PostgreSQL {
 				$values[] = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$values[] = $value;
@@ -169,7 +169,7 @@ class Kecik_PostgreSQL {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'stringe')
 					$value = "'$value'";
 			}
 
@@ -188,7 +188,7 @@ class Kecik_PostgreSQL {
 				$fieldsValues[] = "#field=".$value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'stringe')
 					$value = "'$value'";
 
 				$fieldsValues[] = "$field=".$value;
@@ -213,7 +213,7 @@ class Kecik_PostgreSQL {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -262,7 +262,7 @@ class Kecik_PostgreSQL {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelperPgSQL::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)) {
 			$this->_num_rows = pg_num_rows($res);
 			$this->_fields = '';
@@ -311,7 +311,7 @@ class Kecik_PostgreSQL {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelperPgSQL::find($table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)) {
 			$this->_num_rows = pg_num_rows($this->_raw_res);
 			$this->_fields = '';
@@ -373,8 +373,10 @@ class Kecik_PostgreSQL {
 	            			$dataJoin->$realField = $row->$field;
 		            		unset($row->$field);
 
+                            if (!empty($modelJoin ) && $this->_joinFields) {
+                                $row->$modelJoin = $dataJoin;
+                            }
 
-			            	$row->$modelJoin = $dataJoin;
 		            	}
 	            	}
 	            }
@@ -398,7 +400,7 @@ class Kecik_PostgreSQL {
 
 	public function fields($table) {
 		if (empty($this->_fields)) {
-			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			$query = QueryHelperPgSQL::find($this->dbcon, $table, array(), array(1), array());
 			if ($res = $this->exec($query)) {
 				$nfields = pg_num_fields($res);
 				$fields = array();
@@ -432,9 +434,9 @@ class Kecik_PostgreSQL {
 	}
 }
 
-class QueryHelper {
+class QueryHelperPgSQL {
 	public static function select($list) {
-		$select = [];
+		$select = array();
 
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $selectlist) = each($list)) {
@@ -464,9 +466,9 @@ class QueryHelper {
 
 	public static function where($list, $group='and', $idx_where=1, $group_prev='') {
 		$ret = '';
-		$where = ['and'=>[], 'or'=>[]];
-		$opt = ['and', 'or'];
-		$optrow = [];
+		$where = array('and'=>array(), 'or'=>array());
+		$opt = array('and', 'or');
+		$optrow = array();
 		$wherestr = '';
 
 		if (is_array($list) && count($list) > 0) {
@@ -515,7 +517,7 @@ class QueryHelper {
 										continue;
 									} else {
 										$val = addslashes($val);
-										if (!is_numeric($val))
+										if (gettype($val) == 'string')
 											$val = "'$val'";
 
 										$cond = $val;
@@ -558,7 +560,7 @@ class QueryHelper {
 												$val = '('.implode(', ', $val).')';
 										} else {
 											$val = addslashes($val);
-											if (!is_numeric($val))
+											if (gettype($val) == 'string')
 												$val = "'$val'";
 										}
 
@@ -593,9 +595,9 @@ class QueryHelper {
 		return $ret;
 	}
 
-	public static function group_by($dbcon, $list) {
+	public static function group_by($list) {
 		$ret = '';
-		$group_by = [];
+		$group_by = array();
 		
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $group_bylist) = each($list)) {
@@ -627,7 +629,7 @@ class QueryHelper {
 
 	public static function join($table, $list) {
 		$ret = '';
-		$join = [];
+		$join = array();
 		if (is_array($list) && count($list) > 0) {
 			while (list($idx, $joinlist) = each($list)) {
 				if (count($joinlist) == 2)
@@ -694,7 +696,7 @@ class QueryHelper {
 					break;
 
 					case 'GROUP BY':
-						$group_by = self::group_by($dbcon, $query);
+						$group_by = self::group_by($query);
 					break;
 
 					case 'JOIN':

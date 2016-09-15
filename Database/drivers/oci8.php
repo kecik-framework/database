@@ -71,7 +71,7 @@ class Kecik_Oci8 {
 		return $stid;
 	}
 
-	public function fetch($stid) {
+	public function fetch($stid, $callback = null) {
 		$callback_is = 0;
         if (is_callable($callback))
             $callback_is = 1;
@@ -79,7 +79,7 @@ class Kecik_Oci8 {
             $callback_is = 2;
 
 		$result = array();
-		$this->_num_rows = oci_num_rows($res);
+		$this->_num_rows = oci_num_rows($stid);
 		while (($data = oci_fetch_object($stid)) != false) {
 			if ($callback_is  == 1) {
                 while(list($field, $value) = each($data)) {
@@ -141,7 +141,7 @@ class Kecik_Oci8 {
 				$values[] = $value[0];
 			else {
 				$value = addslashes($value);
-				if (is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$values[] = $value;
@@ -171,7 +171,7 @@ class Kecik_Oci8 {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -190,7 +190,7 @@ class Kecik_Oci8 {
 				$fieldsValues[] = "$field=".$value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 
 				$fieldsValues[] = "$field='".$value."'";
@@ -215,7 +215,7 @@ class Kecik_Oci8 {
 				$value = $value[0];
 			else {
 				$value = addslashes($value);
-				if (!is_numeric($value))
+				if (gettype($value) == 'string')
 					$value = "'$value'";
 			}
 
@@ -263,7 +263,7 @@ class Kecik_Oci8 {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelperOci::find($table, $condition, $limit, $order_by);
 		if ($res = $this->exec($query)) {
 			$this->_num_rows = oci_num_rows($res);
 			$this->_fields = '';
@@ -313,7 +313,7 @@ class Kecik_Oci8 {
         	reset($condition['join']);
         }
 
-		$query = QueryHelper::find($table, $condition, $limit, $order_by);
+		$query = QueryHelperOci::find($table, $condition, $limit, $order_by);
 		if ($this->_raw_res = $this->exec($query)) {
 			$this->_num_rows = oci_num_rows($this->_raw_res);
 			$this->_fields = '';
@@ -375,7 +375,10 @@ class Kecik_Oci8 {
 		            		unset($row->$field);
 
 
-			            	$row->$modelJoin = $dataJoin;
+                            if (!empty($modelJoin ) && $this->_joinFields) {
+                                $row->$modelJoin = $dataJoin;
+                            }
+
 		            	}
 	            	}
 	            }
@@ -399,7 +402,7 @@ class Kecik_Oci8 {
 
 	public function fields($table) {
 		if (empty($this->_fields)) {
-			$query = QueryHelper::find($this->dbcon, $table, array(), array(1), array());
+			$query = QueryHelperOci::find($this->dbcon, $table, array(), array(1), array());
 			if ($res = $this->exec($query)) {
 				$nfields = oci_num_fields($res);
 				$fields = array();
@@ -435,9 +438,9 @@ class Kecik_Oci8 {
 	}
 }
 
-class QueryHelper {
+class QueryHelperOci {
 	public static function select($list) {
-		$select = [];
+		$select = array();
 
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $selectlist) = each($list)) {
@@ -467,9 +470,9 @@ class QueryHelper {
 
 	public static function where($list, $group='and', $idx_where=1, $group_prev='') {
 		$ret = '';
-		$where = ['and'=>[], 'or'=>[]];
-		$opt = ['and', 'or'];
-		$optrow = [];
+		$where = array('and'=>array(), 'or'=>array());
+		$opt = array('and', 'or');
+		$optrow = array();
 		$wherestr = '';
 
 		if (is_array($list) && count($list) > 0) {
@@ -557,7 +560,7 @@ class QueryHelper {
 												$val = '('.implode(', ', $val).')';
 										} else {
 											$val = addslashes($val);
-											if (!is_numeric($val))
+											if (gettype($val) == 'string')
 												$val = "'$val'";
 										}
 
@@ -592,9 +595,9 @@ class QueryHelper {
 		return $ret;
 	}
 
-	public static function group_by($dbcon, $list) {
+	public static function group_by($list) {
 		$ret = '';
-		$group_by = [];
+		$group_by = array();
 
 		if (is_array($list) && count($list) > 0) {
 			while(list($idx, $group_bylist) = each($list)) {
@@ -626,7 +629,7 @@ class QueryHelper {
 
 	public static function join($table, $list) {
 		$ret = '';
-		$join = [];
+		$join = array();
 		if (is_array($list) && count($list) > 0) {
 			while (list($idx, $joinlist) = each($list)) {
 				if (count($joinlist) == 2)
@@ -693,7 +696,7 @@ class QueryHelper {
 					break;
 
 					case 'GROUP BY':
-						$group_by = self::group_by($dbcon, $query);
+						$group_by = self::group_by($query);
 					break;
 
 					case 'JOIN':
@@ -726,7 +729,7 @@ class QueryHelper {
 		}
 
 		if (is_array($odr_by) && count($odr_by) > 0) {
-			$ord = ['asc'=>[], 'desc'=>[]];
+			$ord = array('asc'=>array(), 'desc'=>array());
 			while(list($sort, $fields) = each($odr_by)) {
 				if (strtoupper($sort) == 'ASC') {
 					$ord['asc'][] = implode(', ', $fields).' ASC';
@@ -737,7 +740,7 @@ class QueryHelper {
 			}
 
 			if (count($ord['asc']) > 0 || count($ord['desc'])) {
-				$order = [];
+				$order = array();
 				if (count( $ord['asc'] ) > 0)
 					$order[] .= implode(', ', $ord['asc']).' ';
 				if (count( $ord['desc'] ) > 0)
