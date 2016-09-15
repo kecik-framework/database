@@ -319,7 +319,7 @@ class Kecik_MsSQL {
 		return $ret;
 	}
 
-	public function raw_find($table, $condition=array(), $limit=array(), $order_by=array()) {
+	public function rawFind($table, $condition=array(), $limit=array(), $order_by=array()) {
 		$this->_fields = null;
         $this->_num_rows = 0;
 
@@ -395,7 +395,11 @@ class Kecik_MsSQL {
 	            }
 
 	            if (count($this->_joinFields) > 0) {;
-	            	reset($this->_joinFields);
+	            	
+                    reset($this->_joinFields);
+        
+                    $dataJoin = new stdclass;
+                    
 	            	while (list($field, $join) = each($this->_joinFields)) {
 	            		if (isset($row->$field)) {
 	            			$modelJoin = $this->_joinFields[$field][0];
@@ -453,15 +457,15 @@ class Kecik_MsSQL {
 		return $this->_fields;
 	}
 
-	public function num_rows() {
+	public function numRows() {
 		return $this->_num_rows;
 	}
 
-	public function insert_id() {
+	public function insertId() {
 		return $this->_insert_id;
 	}
 
-	public function set_pk($pk) {
+	public function setPK($pk) {
 		$this->_pk = $pk;
 	}
 }

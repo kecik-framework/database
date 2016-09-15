@@ -11,35 +11,8 @@
  **/
 namespace Kecik;
 
-class DBConfig
-{
-    public $dsn;
-    public $driver;
-    public $hostname;
-    public $username;
-    public $password;
-    public $dbname;
-    public $charset;
-    
-    private $failOver = array();
-    
-    /*public function __construct( $driver, $hostname = NULL, $username = NULL, $password = NULL, $dbname = NULL,
-        $charset = NULL, $failOver = NULL
-    ) {
-        if ( !is_null($hostname) && !is_null($username) && !is_null($password) && !is_null($dbname) ) {
-            $this->driver   = $driver;
-            $this->hostname = $hostname;
-            $this->username = $username;
-            $this->password = $password;
-            $this->dbname   = $dbname;
-        } else {
-            $this->dsn = $driver;
-        }
-        
-        $this->chartset = $charset;
-        $this->failOver = ( !is_null($failOver) ) ? $failOver : $this->failOver;
-    }*/
-}
+require_once "Config.php";
+require_once "Collection.php";
 
 /**
  * Database
@@ -227,11 +200,11 @@ class Database
      *
      * @return res
      **/
-    public function exec( $query )
+    public function exec( $query, $bindParams = array() )
     {
         $this->table = '';
         
-        return $this->db->exec($query);
+        return $this->db->exec($query, $bindParams);
     }
     
     /**
@@ -339,7 +312,7 @@ class Database
      *
      * @return mixed
      */
-    public function raw_find( $condition = array(), $limit = array(), $order_by = array(), $table = '' )
+    public function rawFind( $condition = array(), $limit = array(), $order_by = array(), $table = '' )
     {
         $table = ( !empty( $this->table ) ) ? $this->table : $table;
         
@@ -361,25 +334,25 @@ class Database
     /**
      * @return mixed
      */
-    public function num_rows()
+    public function numRows()
     {
-        return $this->db->num_rows();
+        return $this->db->numRows();
     }
     
     /**
      * @return mixed
      */
-    public function insert_id()
+    public function insertId()
     {
-        return $this->db->insert_id();
+        return $this->db->insertId();
     }
     
     /**
      * @param $pk
      */
-    public function set_pk( $pk )
+    public function setPK( $pk )
     {
-        $this->db->set_pk($pk);
+        $this->db->setPK($pk);
     }
     
     /**

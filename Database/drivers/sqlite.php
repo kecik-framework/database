@@ -146,15 +146,15 @@ class Kecik_SQLite {
 		return array();
 	}
 
-	public function num_rows() {
+	public function numRows() {
 		return 0;
 	}
 
-	public function insert_id() {
+	public function insertId() {
 		return null;
 	}
 
-	public function set_pk($pk) {
+	public function setPK($pk) {
 		$this->_pk = $pk;
 	}
 }

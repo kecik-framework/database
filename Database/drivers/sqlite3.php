@@ -160,6 +160,7 @@ class Kecik_SQLite3 extends SQLite3 {
 	public function set_pk($pk) {
 		$this->_pk = $pk;
 	}
+	
 }
 
 return new Kecik_Sqlite3;
