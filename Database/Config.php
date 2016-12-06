@@ -20,22 +20,27 @@ class DBConfig
     public $dbname;
     public $charset;
     
-    private $failOver = array();
+    private $failOver = [];
     
-    /*public function __construct( $driver, $hostname = NULL, $username = NULL, $password = NULL, $dbname = NULL,
-        $charset = NULL, $failOver = NULL
-    ) {
-        if ( !is_null($hostname) && !is_null($username) && !is_null($password) && !is_null($dbname) ) {
-            $this->driver   = $driver;
-            $this->hostname = $hostname;
-            $this->username = $username;
-            $this->password = $password;
-            $this->dbname   = $dbname;
-        } else {
-            $this->dsn = $driver;
+    public function __construct( $config )
+    {
+        
+        if ( is_array($config) ) {
+            $config = (object) $config;
         }
         
-        $this->chartset = $charset;
-        $this->failOver = ( !is_null($failOver) ) ? $failOver : $this->failOver;
-    }*/
+        if ( !isset( $config->dsn ) && empty( $config->dsn ) ) {
+            $this->driver   = ( isset( $config->driver ) ) ? $config->driver : '';
+            $this->hostname = ( isset( $config->hostname ) ) ? $config->hostname : '';
+            $this->username = ( isset( $config->username ) ) ? $config->username : '';
+            $this->password = ( isset( $config->password ) ) ? $config->password : '';
+            $this->dbname   = ( isset( $config->dbname ) ) ? $config->dbname : '';
+        } else {
+            $this->dsn = $config->dsn;
+        }
+        
+        $this->charset  = ( isset( $config->charset ) ) ? : '';
+        $this->failOver = ( !empty( $config->failOver ) ) ? : '';
+    }
+    
 }

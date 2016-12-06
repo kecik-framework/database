@@ -340,96 +340,42 @@ class Kecik_MySqli
             'result' => $this->exec($query)
         );
     }
-    
-    public function find( $table, $condition = array(), $limit = array(), $order_by = array() )
+
+
+//    public function find( $table, $condition = array(), $limit = array(), $order_by = array() )
+    public function find( $table, $params = [] )
     {
-        $ret             = array();
-        $callback        = NULL;
         $this->_fields   = NULL;
         $this->_num_rows = 0;
-        
-        if ( isset( $condition[ 'callback' ] ) ) {
-            $callback = $condition[ 'callback' ];
-            unset( $condition[ 'callback' ] );
+    
+        if ( isset( $params[ 'callback' ] ) ) {
+            $this->_raw_callback = $params[ 'callback' ];
+            unset( $params[ 'callback' ] );
         }
+    
+        if ( isset( $params[ 'join' ] ) && count($params[ 'join' ]) > 0 ) {
         
-        if ( isset( $condition[ 'join' ] ) && count($condition[ 'join' ]) > 0 ) {
-            
-            if ( !isset( $condition[ 'select' ] ) ) {
-                $condition[ 'select' ] = array( array( "`$table`.*" ) );
+            if ( !isset( $params[ 'select' ] ) ) {
+                $params[ 'select' ] = array( array( "$table.*" ) );
             }
             
             $this->_joinFields = array();
-            while ( list( $id, $join ) = each($condition[ 'join' ]) ) {
+        
+            while ( list( $id, $join ) = each($params[ 'join' ]) ) {
                 $this->_fields = '';
                 $fields        = $this->fields($join[ 1 ]);
                 
                 while ( list( $id, $field ) = each($fields) ) {
                     $this->_joinFields[ "__$join[1]_$field->name" ] = array( $join[ 1 ], $field->name );
-                    $condition[ 'select' ][]                        = array( "$join[1].$field->name", 'as' => "__$join[1]_$field->name" );
+                    $params[ 'select' ][]                           = array( "$join[1].$field->name", 'as' => "__$join[1]_$field->name" );
                 }
+                
             }
-            
-            reset($condition[ 'join' ]);
+        
+            reset($params[ 'join' ]);
         }
-        
-        $query = QueryHelperMySQLi::find($this->dbcon, $table, $condition, $limit, $order_by);
-        
-        if ( $res = $this->exec($query) ) {
-            $this->_num_rows = $res->num_rows;
-            $this->_fields   = '';
-            $fields          = $res->fetch_fields();
-            
-            foreach ( $fields as $field ) {
-                $this->_fields[] = (object) array(
-                    'name'  => $field->name,
-                    'type'  => $field->type,
-                    'size'  => $field->max_length,
-                    'table' => $field->table
-                );
-            }
-            
-            $ret = $this->fetch($res, $callback);
-        } else {
-            echo $this->dbcon->error;
-        }
-        
-        return $ret;
-    }
     
-    public function rawFind( $table, $condition = array(), $limit = array(), $order_by = array() )
-    {
-        $this->_fields   = NULL;
-        $this->_num_rows = 0;
-        
-        if ( isset( $condition[ 'callback' ] ) ) {
-            $this->_raw_callback = $condition[ 'callback' ];
-            unset( $condition[ 'callback' ] );
-        }
-        
-        if ( isset( $condition[ 'join' ] ) && count($condition[ 'join' ]) > 0 ) {
-            
-            if ( !isset( $condition[ 'select' ] ) ) {
-                $condition[ 'select' ] = array( array( "$table.*" ) );
-            }
-            
-            $this->_joinFields = array();
-            
-            while ( list( $id, $join ) = each($condition[ 'join' ]) ) {
-                $this->_fields = '';
-                $fields        = $this->fields($join[ 1 ]);
-                
-                while ( list( $id, $field ) = each($fields) ) {
-                    $this->_joinFields[ "__$join[1]_$field->name" ] = array( $join[ 1 ], $field->name );
-                    $condition[ 'select' ][]                        = array( "$join[1].$field->name", 'as' => "__$join[1]_$field->name" );
-                }
-                
-            }
-            
-            reset($condition[ 'join' ]);
-        }
-        
-        $query = QueryHelperMySQLi::find($this->dbcon, $table, $condition, $limit, $order_by);
+        $query = QueryHelperMySQLi::find($this->dbcon, $table, $params);
         if ( $this->_raw_res = $this->exec($query) ) {
             $this->_num_rows = $this->_raw_res->num_rows;
             $this->_fields   = '';
@@ -467,8 +413,8 @@ class Kecik_MySqli
             }
             
             $callback = $this->_raw_callback;
-            
-            while ( $row = $res->fetch_object() ) {
+    
+            foreach ( $res as $idx => $row ) {
                 
                 if ( $callback_is == 1 ) {
                     
@@ -515,8 +461,8 @@ class Kecik_MySqli
                     }
                     
                 }
-                
-                $callable($row);
+        
+                $callable($idx, $row);
                 array_push($data, $row);
             }
             
@@ -585,6 +531,20 @@ class QueryHelperMySQLi
         if ( is_array($list) && count($list) > 0 ) {
             
             while ( list( $idx, $selectlist ) = each($list) ) {
+    
+                if ( !is_array($selectlist) ) {
+                    $fields = explode('.', $selectlist);
+        
+                    if ( count($fields) > 1 ) {
+                        $fields = "`$fields[0]`.`$fields[1]`";
+                    } else {
+                        $fields = "`$fields[0]`";
+                    }
+        
+                    $select[] = $fields;
+        
+                    continue;
+                }
                 
                 while ( list( $id, $fields ) = each($selectlist) ) {
                     
@@ -895,8 +855,9 @@ class QueryHelperMySQLi
         
         return $ret;
     }
-    
-    public static function find( $dbcon, $table, $filter = array(), $lmt = array(), $odr_by = array() )
+
+//    public static function find( $dbcon, $table, $filter = array(), $lmt = array(), $odr_by = array() )
+    public static function find( $dbcon, $table, $params = [] )
     {
         $select   = '';
         $from     = "FROM `$table`";
@@ -905,51 +866,40 @@ class QueryHelperMySQLi
         $limit    = '';
         $order_by = '';
         $union    = '';
-        
-        if ( is_array($filter) && count($filter) > 0 ) {
-            
-            while ( list( $syntax, $query ) = each($filter) ) {
-                $syntax = strtoupper($syntax);
-                
-                switch ( $syntax ) {
-                    case 'SELECT':
-                        $select .= self::select($query);
-                        break;
-                    
-                    case 'WHERE':
-                        $where = self::where($dbcon, $query);
-                        break;
-                    
-                    case 'GROUP BY':
-                        $group_by = self::group_by($query);
-                        break;
-                    
-                    case 'JOIN':
-                        $from .= self::join($table, $query);
-                        break;
-                    
-                    case 'UNION':
-                        $union = self::union($query);
-                        break;
-                    
-                    default:
-                        # code...
-                        break;
-                }
-            }
-            
+    
+        if ( isset( $params[ 'select' ] ) ) {
+            $select .= self::select($params[ 'select' ]);
         }
-        
-        if ( is_array($lmt) && count($lmt) > 0 ) {
-            if ( !isset( $lmt[ 1 ] ) )
-                $limit = " LIMIT $lmt[0]";
+    
+        if ( isset( $params[ 'where' ] ) ) {
+            $where = self::where($dbcon, $params[ 'where' ]);
+        }
+    
+        if ( isset( $params[ 'group by' ] ) ) {
+            $group_by = self::group_by($params[ 'group by' ]);
+        }
+    
+        if ( isset( $params[ 'join' ] ) ) {
+            $from .= self::join($table, $params[ 'join' ]);
+        }
+    
+        if ( isset( $params[ 'union' ] ) ) {
+            $union = self::union($params[ 'union' ]);
+        }
+    
+    
+        if ( isset( $params[ 'limit' ] ) && is_array($params[ 'limit' ]) && count($params[ 'limit' ]) > 0 ) {
+            if ( !isset( $params[ 'limit' ][ 1 ] ) )
+                $limit
+                    = " LIMIT " . $params[ 'limit' ][ 0 ];
             else
-                $limit = " LIMIT $lmt[1], $lmt[0]";
+                $limit
+                    = " LIMIT " . $params[ 'limit' ][ 1 ] . ", " . $params[ 'limit' ][ 0 ];
         }
-        
-        if ( is_array($odr_by) && count($odr_by) > 0 ) {
+    
+        if ( isset( $params[ 'order_by' ] ) && is_array($params[ 'order_by' ]) && count($params[ 'order_by' ]) > 0 ) {
             $ord = array( 'asc' => array(), 'desc' => array() );
-            while ( list( $sort, $fields ) = each($odr_by) ) {
+            while ( list( $sort, $fields ) = each($params[ 'order_by' ]) ) {
                 if ( strtoupper($sort) == 'ASC' ) {
                     $ord[ 'asc' ][] = implode(', ', $fields) . ' ASC';
                 } elseif ( strtoupper($sort) == 'DESC' ) {

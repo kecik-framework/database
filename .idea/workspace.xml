@@ -2,16 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8d683a6b-274c-469f-80aa-df91c2915244" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/Collection.php" afterPath="$PROJECT_DIR$/Database/Collection.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/Config.php" afterPath="$PROJECT_DIR$/Database/Config.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/Database.php" afterPath="$PROJECT_DIR$/Database/Database.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/mongo.php" afterPath="$PROJECT_DIR$/Database/drivers/mongo.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/mysqli.php" afterPath="$PROJECT_DIR$/Database/drivers/mysqli.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/oci8.php" afterPath="$PROJECT_DIR$/Database/drivers/oci8.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/pdo.php" afterPath="$PROJECT_DIR$/Database/drivers/pdo.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/pgsql.php" afterPath="$PROJECT_DIR$/Database/drivers/pgsql.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/sqlite.php" afterPath="$PROJECT_DIR$/Database/drivers/sqlite.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/drivers/sqlsrv.php" afterPath="$PROJECT_DIR$/Database/drivers/sqlsrv.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.json" afterPath="$PROJECT_DIR$/composer.json" />
     </list>
     <ignored path="database.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,7 +18,6 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
@@ -46,96 +40,80 @@
       <file leaf-file-name="Database.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Database/Database.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
-              <folding />
+            <state relative-caret-position="589">
+              <caret line="317" column="4" selection-start-line="317" selection-start-column="4" selection-end-line="317" selection-end-column="4" />
+              <folding>
+                <element signature="e#6#311#0#PHP" expanded="true" />
+                <element signature="e#4516#7478#0#PHP" expanded="false" />
+                <element signature="e#7643#7728#0#PHP" expanded="false" />
+                <element signature="e#7733#7887#0#PHP" expanded="false" />
+                <element signature="e#7897#8016#0#PHP" expanded="false" />
+                <element signature="e#8021#8101#0#PHP" expanded="false" />
+                <element signature="e#8111#8139#0#PHP" expanded="false" />
+                <element signature="e#8144#8389#0#PHP" expanded="false" />
+                <element signature="e#8399#8459#0#PHP" expanded="false" />
+                <element signature="e#8464#8569#0#PHP" expanded="false" />
+                <element signature="e#8579#8693#0#PHP" expanded="false" />
+                <element signature="e#8698#8886#0#PHP" expanded="false" />
+                <element signature="e#8896#9047#0#PHP" expanded="false" />
+                <element signature="e#9052#9255#0#PHP" expanded="false" />
+                <element signature="e#9265#9389#0#PHP" expanded="false" />
+                <element signature="e#9394#9573#0#PHP" expanded="false" />
+                <element signature="e#9588#9746#0#PHP" expanded="false" />
+                <element signature="e#9949#10009#0#PHP" expanded="false" />
+                <element signature="e#10014#10178#0#PHP" expanded="false" />
+                <element signature="e#10188#10220#0#PHP" expanded="false" />
+                <element signature="e#10225#10299#0#PHP" expanded="false" />
+                <element signature="e#10309#10341#0#PHP" expanded="false" />
+                <element signature="e#10346#10422#0#PHP" expanded="false" />
+                <element signature="e#10432#10461#0#PHP" expanded="false" />
+                <element signature="e#10466#10537#0#PHP" expanded="false" />
+                <element signature="e#10547#10565#0#PHP" expanded="false" />
+                <element signature="e#10570#10638#0#PHP" expanded="false" />
+                <marker date="1481015722830" expanded="false" signature="3426:7633" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mysqli.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="mysqli.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Database/drivers/mysqli.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8381">
-              <caret line="493" column="20" selection-start-line="493" selection-start-column="20" selection-end-line="493" selection-end-column="45" />
+            <state relative-caret-position="344">
+              <caret line="547" column="16" selection-start-line="547" selection-start-column="16" selection-end-line="547" selection-end-column="16" />
               <folding>
-                <marker date="1468464176065" expanded="true" signature="5153:5200" ph="INSERT INTO `${$table}`... " />
-                <marker date="1468464176065" expanded="true" signature="7039:7073" ph="UPDATE `${$t... " />
-                <marker date="1468464176065" expanded="true" signature="8186:8207" ph="DELETE FROM " />
+                <element signature="n#fields#0;n#Kecik_MySqli#0;n#!!top" expanded="false" />
+                <element signature="e#16340#17830#0#PHP" expanded="false" />
+                <element signature="n#where#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+                <element signature="n#group_by#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+                <element signature="n#join#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+                <element signature="n#union#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+                <element signature="n#find#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+                <marker date="1481016006817" expanded="true" signature="5911:5958" ph="INSERT INTO `${$table}`... " />
+                <marker date="1481016006817" expanded="true" signature="8042:8076" ph="UPDATE `${$t... " />
+                <marker date="1481016006817" expanded="true" signature="9324:9345" ph="DELETE FROM " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mongo.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Database/drivers/mongo.php">
+      <file leaf-file-name="Config.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Database/Config.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2380">
-              <caret line="140" column="5" selection-start-line="140" selection-start-column="5" selection-end-line="140" selection-end-column="5" />
+            <state relative-caret-position="221">
+              <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="oci8.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Database/drivers/oci8.php">
+      <file leaf-file-name="Collection.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Database/Collection.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8432">
-              <caret line="496" column="26" selection-start-line="496" selection-start-column="26" selection-end-line="496" selection-end-column="26" />
+            <state relative-caret-position="68">
+              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
               <folding>
-                <marker date="1468467753147" expanded="true" signature="1777:1912" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper($table)}\&quot;... " />
-                <marker date="1468467753147" expanded="true" signature="1939:2090" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper($table)}\&quot;... " />
-                <marker date="1468467753147" expanded="true" signature="4371:4458" ph="DELETE FROM " />
-                <marker date="1468467753147" expanded="true" signature="13116:13300" ph="SELECT * FRO... *" />
-                <marker date="1468467753147" expanded="true" signature="13131:13258" ph="SELECT a.*, sql" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pdo.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Database/drivers/pdo.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="12801">
-              <caret line="753" column="23" selection-start-line="753" selection-start-column="23" selection-end-line="753" selection-end-column="23" />
-              <folding>
-                <marker date="1468467704904" expanded="true" signature="1766:1813" ph="INSERT INTO `${$table}`... " />
-                <marker date="1468467704904" expanded="true" signature="3482:3514" ph="UPDATE ${$ta... " />
-                <marker date="1468467704904" expanded="true" signature="4346:4365" ph="DELETE FROM " />
-                <marker date="1468467704904" expanded="true" signature="13172:13359" ph="SELECT * FRO... *" />
-                <marker date="1468467704904" expanded="true" signature="13187:13316" ph="SELECT a.*, sql" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pgsql.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Database/drivers/pgsql.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8398">
-              <caret line="494" column="26" selection-start-line="494" selection-start-column="26" selection-end-line="494" selection-end-column="26" />
-              <folding>
-                <marker date="1468467673519" expanded="true" signature="2071:2116" ph="INSERT INTO ${$table}... " />
-                <marker date="1468467673519" expanded="true" signature="3550:3582" ph="UPDATE ${$ta... " />
-                <marker date="1468467673519" expanded="true" signature="4286:4305" ph="DELETE FROM " />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sqlsrv.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Database/drivers/sqlsrv.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="766" column="12" selection-start-line="766" selection-start-column="12" selection-end-line="766" selection-end-column="12" />
-              <folding>
-                <marker date="1468467947076" expanded="true" signature="2425:2470" ph="INSERT INTO ${$table}... " />
-                <marker date="1468467947076" expanded="true" signature="2472:2505" ph="SELECT SCOPE... " />
-                <marker date="1468467947076" expanded="true" signature="4066:4098" ph="UPDATE ${$ta... " />
-                <marker date="1468467947076" expanded="true" signature="4802:4821" ph="DELETE FROM " />
-                <marker date="1468467947076" expanded="true" signature="6754:6774" ph="SELECT TOP 1... ${$table}" />
-                <marker date="1468467947076" expanded="true" signature="14114:14274" ph="SELECT * FRO... ROW_NUMBER" />
-                <marker date="1468467947076" expanded="true" signature="14129:14217" ph="SELECT ${$se... " />
+                <element signature="e#146#1154#1#PHP" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -150,13 +128,16 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/composer.json" />
-        <option value="$PROJECT_DIR$/Database/Database.php" />
-        <option value="$PROJECT_DIR$/Database/drivers/mysqli.php" />
         <option value="$PROJECT_DIR$/Database/drivers/mongo.php" />
         <option value="$PROJECT_DIR$/Database/drivers/pgsql.php" />
         <option value="$PROJECT_DIR$/Database/drivers/pdo.php" />
         <option value="$PROJECT_DIR$/Database/drivers/oci8.php" />
         <option value="$PROJECT_DIR$/Database/drivers/sqlsrv.php" />
+        <option value="$PROJECT_DIR$/Database/Collection.php" />
+        <option value="$PROJECT_DIR$/test.php" />
+        <option value="$PROJECT_DIR$/Database/Config.php" />
+        <option value="$PROJECT_DIR$/Database/Database.php" />
+        <option value="$PROJECT_DIR$/Database/drivers/mysqli.php" />
       </list>
     </option>
   </component>
@@ -201,7 +182,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -255,13 +235,56 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="editor.preferences.folding" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../dic" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" working-dir="">
+      <method />
+    </configuration>
+    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
+      <BehatRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory />
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui />
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory />
+      <recursive>false</recursive>
+      <method />
+    </configuration>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -279,23 +302,24 @@
       <workItem from="1468458255338" duration="665000" />
       <workItem from="1468462764231" duration="5682000" />
       <workItem from="1468469590246" duration="599000" />
+      <workItem from="1481005646152" duration="9563000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6946000" />
+    <option name="totallyTimeSpent" value="16509000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1376" height="754" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2606383" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26443768" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329582" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -320,7 +344,9 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -336,18 +362,54 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
-          <folding />
+          <folding>
+            <element signature="e#6#311#0#PHP" expanded="true" />
+            <element signature="e#4516#7478#0#PHP" expanded="false" />
+            <element signature="e#7643#7728#0#PHP" expanded="false" />
+            <element signature="e#7733#7887#0#PHP" expanded="false" />
+            <element signature="e#7897#8016#0#PHP" expanded="false" />
+            <element signature="e#8021#8101#0#PHP" expanded="false" />
+            <element signature="e#8111#8139#0#PHP" expanded="false" />
+            <element signature="e#8144#8389#0#PHP" expanded="false" />
+            <element signature="e#8399#8459#0#PHP" expanded="false" />
+            <element signature="e#8464#8569#0#PHP" expanded="false" />
+            <element signature="e#8579#8693#0#PHP" expanded="false" />
+            <element signature="e#8698#8886#0#PHP" expanded="false" />
+            <element signature="e#8896#9047#0#PHP" expanded="false" />
+            <element signature="e#9052#9255#0#PHP" expanded="false" />
+            <element signature="e#9265#9389#0#PHP" expanded="false" />
+            <element signature="e#9394#9573#0#PHP" expanded="false" />
+            <element signature="e#9588#9746#0#PHP" expanded="false" />
+            <element signature="e#9949#10009#0#PHP" expanded="false" />
+            <element signature="e#10014#10178#0#PHP" expanded="false" />
+            <element signature="e#10188#10220#0#PHP" expanded="false" />
+            <element signature="e#10225#10299#0#PHP" expanded="false" />
+            <element signature="e#10309#10341#0#PHP" expanded="false" />
+            <element signature="e#10346#10422#0#PHP" expanded="false" />
+            <element signature="e#10432#10461#0#PHP" expanded="false" />
+            <element signature="e#10466#10537#0#PHP" expanded="false" />
+            <element signature="e#10547#10565#0#PHP" expanded="false" />
+            <element signature="e#10570#10638#0#PHP" expanded="false" />
+            <marker date="1481015722830" expanded="false" signature="3426:7633" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Database/drivers/mysqli.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8381">
-          <caret line="493" column="20" selection-start-line="493" selection-start-column="20" selection-end-line="493" selection-end-column="45" />
+          <caret line="493" column="20" selection-start-line="493" selection-start-column="20" selection-end-line="493" selection-end-column="20" />
           <folding>
-            <marker date="1468464176065" expanded="true" signature="5153:5200" ph="INSERT INTO `${$table}`... " />
-            <marker date="1468464176065" expanded="true" signature="7039:7073" ph="UPDATE `${$t... " />
-            <marker date="1468464176065" expanded="true" signature="8186:8207" ph="DELETE FROM " />
+            <element signature="n#fields#0;n#Kecik_MySqli#0;n#!!top" expanded="false" />
+            <element signature="e#16340#17830#0#PHP" expanded="false" />
+            <element signature="n#where#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#group_by#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#join#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#union#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#find#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <marker date="1481016006817" expanded="true" signature="5911:5958" ph="INSERT INTO `${$table}`... " />
+            <marker date="1481016006817" expanded="true" signature="8042:8076" ph="UPDATE `${$t... " />
+            <marker date="1481016006817" expanded="true" signature="9324:9345" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -365,11 +427,11 @@
         <state relative-caret-position="8432">
           <caret line="496" column="26" selection-start-line="496" selection-start-column="26" selection-end-line="496" selection-end-column="26" />
           <folding>
-            <marker date="1468467753147" expanded="true" signature="1777:1912" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper($table)}\&quot;... " />
-            <marker date="1468467753147" expanded="true" signature="1939:2090" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper($table)}\&quot;... " />
-            <marker date="1468467753147" expanded="true" signature="4371:4458" ph="DELETE FROM " />
-            <marker date="1468467753147" expanded="true" signature="13116:13300" ph="SELECT * FRO... *" />
-            <marker date="1468467753147" expanded="true" signature="13131:13258" ph="SELECT a.*, sql" />
+            <marker date="1473911362000" expanded="true" signature="4734:4903" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper( $table )}\&quot; (${$fields}) VALUES (${$values}) RE... " />
+            <marker date="1473911362000" expanded="true" signature="4943:5128" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper( $table )}\&quot; (${$fields}) VALUES (${$values}) RE... " />
+            <marker date="1473911362000" expanded="true" signature="7641:7724" ph="DELETE FROM " />
+            <marker date="1473911362000" expanded="true" signature="28472:28656" ph="SELECT * FRO... *" />
+            <marker date="1473911362000" expanded="true" signature="28487:28614" ph="SELECT a.*, sql" />
           </folding>
         </state>
       </provider>
@@ -379,11 +441,11 @@
         <state relative-caret-position="12801">
           <caret line="753" column="23" selection-start-line="753" selection-start-column="23" selection-end-line="753" selection-end-column="23" />
           <folding>
-            <marker date="1468467704904" expanded="true" signature="1766:1813" ph="INSERT INTO `${$table}`... " />
-            <marker date="1468467704904" expanded="true" signature="3482:3514" ph="UPDATE ${$ta... " />
-            <marker date="1468467704904" expanded="true" signature="4346:4365" ph="DELETE FROM " />
-            <marker date="1468467704904" expanded="true" signature="13172:13359" ph="SELECT * FRO... *" />
-            <marker date="1468467704904" expanded="true" signature="13187:13316" ph="SELECT a.*, sql" />
+            <marker date="1473911380000" expanded="true" signature="4917:4964" ph="INSERT INTO `${$table}`... " />
+            <marker date="1473911380000" expanded="true" signature="6581:6613" ph="UPDATE ${$ta... " />
+            <marker date="1473911380000" expanded="true" signature="7720:7739" ph="DELETE FROM " />
+            <marker date="1473911380000" expanded="true" signature="28754:28941" ph="SELECT * FRO... *" />
+            <marker date="1473911380000" expanded="true" signature="28769:28898" ph="SELECT a.*, sql" />
           </folding>
         </state>
       </provider>
@@ -391,11 +453,11 @@
     <entry file="file://$PROJECT_DIR$/Database/drivers/pgsql.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8398">
-          <caret line="494" column="26" selection-start-line="494" selection-start-column="26" selection-end-line="494" selection-end-column="26" />
+          <caret line="494" column="26" selection-start-line="494" selection-start-column="24" selection-end-line="494" selection-end-column="24" />
           <folding>
-            <marker date="1468467673519" expanded="true" signature="2071:2116" ph="INSERT INTO ${$table}... " />
-            <marker date="1468467673519" expanded="true" signature="3550:3582" ph="UPDATE ${$ta... " />
-            <marker date="1468467673519" expanded="true" signature="4286:4305" ph="DELETE FROM " />
+            <marker date="1473911452000" expanded="true" signature="3804:3849" ph="INSERT INTO ${$table}... " />
+            <marker date="1473911452000" expanded="true" signature="4886:4918" ph="UPDATE ${$ta... " />
+            <marker date="1473911452000" expanded="true" signature="5540:5559" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -405,22 +467,14 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1468467947076" expanded="true" signature="2425:2470" ph="INSERT INTO ${$table}... " />
-            <marker date="1468467947076" expanded="true" signature="2472:2505" ph="SELECT SCOPE... " />
-            <marker date="1468467947076" expanded="true" signature="4066:4098" ph="UPDATE ${$ta... " />
-            <marker date="1468467947076" expanded="true" signature="4802:4821" ph="DELETE FROM " />
-            <marker date="1468467947076" expanded="true" signature="6754:6774" ph="SELECT TOP 1... ${$table}" />
-            <marker date="1468467947076" expanded="true" signature="14114:14274" ph="SELECT * FRO... ROW_NUMBER" />
-            <marker date="1468467947076" expanded="true" signature="14129:14217" ph="SELECT ${$se... " />
+            <marker date="1473911548000" expanded="true" signature="4199:4244" ph="INSERT INTO ${$table}... " />
+            <marker date="1473911548000" expanded="true" signature="4246:4279" ph="SELECT SCOPE... " />
+            <marker date="1473911548000" expanded="true" signature="5373:5405" ph="UPDATE ${$ta... " />
+            <marker date="1473911548000" expanded="true" signature="6027:6046" ph="DELETE FROM " />
+            <marker date="1473911548000" expanded="true" signature="11544:11564" ph="SELECT TOP 1... ${$table}" />
+            <marker date="1473911548000" expanded="true" signature="20239:20379" ph="SELECT * FRO... ROW_NUMBER" />
+            <marker date="1473911548000" expanded="true" signature="20254:20334" ph="SELECT ${$se... " />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/composer.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -436,7 +490,36 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
-          <folding />
+          <folding>
+            <element signature="e#6#311#0#PHP" expanded="true" />
+            <element signature="e#4516#7478#0#PHP" expanded="false" />
+            <element signature="e#7643#7728#0#PHP" expanded="false" />
+            <element signature="e#7733#7887#0#PHP" expanded="false" />
+            <element signature="e#7897#8016#0#PHP" expanded="false" />
+            <element signature="e#8021#8101#0#PHP" expanded="false" />
+            <element signature="e#8111#8139#0#PHP" expanded="false" />
+            <element signature="e#8144#8389#0#PHP" expanded="false" />
+            <element signature="e#8399#8459#0#PHP" expanded="false" />
+            <element signature="e#8464#8569#0#PHP" expanded="false" />
+            <element signature="e#8579#8693#0#PHP" expanded="false" />
+            <element signature="e#8698#8886#0#PHP" expanded="false" />
+            <element signature="e#8896#9047#0#PHP" expanded="false" />
+            <element signature="e#9052#9255#0#PHP" expanded="false" />
+            <element signature="e#9265#9389#0#PHP" expanded="false" />
+            <element signature="e#9394#9573#0#PHP" expanded="false" />
+            <element signature="e#9588#9746#0#PHP" expanded="false" />
+            <element signature="e#9949#10009#0#PHP" expanded="false" />
+            <element signature="e#10014#10178#0#PHP" expanded="false" />
+            <element signature="e#10188#10220#0#PHP" expanded="false" />
+            <element signature="e#10225#10299#0#PHP" expanded="false" />
+            <element signature="e#10309#10341#0#PHP" expanded="false" />
+            <element signature="e#10346#10422#0#PHP" expanded="false" />
+            <element signature="e#10432#10461#0#PHP" expanded="false" />
+            <element signature="e#10466#10537#0#PHP" expanded="false" />
+            <element signature="e#10547#10565#0#PHP" expanded="false" />
+            <element signature="e#10570#10638#0#PHP" expanded="false" />
+            <marker date="1481015722830" expanded="false" signature="3426:7633" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -445,9 +528,16 @@
         <state relative-caret-position="8381">
           <caret line="493" column="20" selection-start-line="493" selection-start-column="20" selection-end-line="493" selection-end-column="45" />
           <folding>
-            <marker date="1468464176065" expanded="true" signature="5153:5200" ph="INSERT INTO `${$table}`... " />
-            <marker date="1468464176065" expanded="true" signature="7039:7073" ph="UPDATE `${$t... " />
-            <marker date="1468464176065" expanded="true" signature="8186:8207" ph="DELETE FROM " />
+            <element signature="n#fields#0;n#Kecik_MySqli#0;n#!!top" expanded="false" />
+            <element signature="e#16340#17830#0#PHP" expanded="false" />
+            <element signature="n#where#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#group_by#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#join#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#union#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#find#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <marker date="1481016006817" expanded="true" signature="5911:5958" ph="INSERT INTO `${$table}`... " />
+            <marker date="1481016006817" expanded="true" signature="8042:8076" ph="UPDATE `${$t... " />
+            <marker date="1481016006817" expanded="true" signature="9324:9345" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -460,31 +550,67 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Database/drivers/pdo.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12801">
-          <caret line="753" column="23" selection-start-line="753" selection-start-column="23" selection-end-line="753" selection-end-column="23" />
-          <folding>
-            <marker date="1468467704904" expanded="true" signature="1766:1813" ph="INSERT INTO `${$table}`... " />
-            <marker date="1468467704904" expanded="true" signature="3482:3514" ph="UPDATE ${$ta... " />
-            <marker date="1468467704904" expanded="true" signature="4346:4365" ph="DELETE FROM " />
-            <marker date="1468467704904" expanded="true" signature="13172:13359" ph="SELECT * FRO... *" />
-            <marker date="1468467704904" expanded="true" signature="13187:13316" ph="SELECT a.*, sql" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Database/drivers/oci8.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8432">
           <caret line="496" column="26" selection-start-line="496" selection-start-column="26" selection-end-line="496" selection-end-column="26" />
           <folding>
-            <marker date="1468467753147" expanded="true" signature="1777:1912" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper($table)}\&quot;... " />
-            <marker date="1468467753147" expanded="true" signature="1939:2090" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper($table)}\&quot;... " />
-            <marker date="1468467753147" expanded="true" signature="4371:4458" ph="DELETE FROM " />
-            <marker date="1468467753147" expanded="true" signature="13116:13300" ph="SELECT * FRO... *" />
-            <marker date="1468467753147" expanded="true" signature="13131:13258" ph="SELECT a.*, sql" />
+            <marker date="1473911362000" expanded="true" signature="4734:4903" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper( $table )}\&quot; (${$fields}) VALUES (${$values}) RE... " />
+            <marker date="1473911362000" expanded="true" signature="4943:5128" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper( $table )}\&quot; (${$fields}) VALUES (${$values}) RE... " />
+            <marker date="1473911362000" expanded="true" signature="7641:7724" ph="DELETE FROM " />
+            <marker date="1473911362000" expanded="true" signature="28472:28656" ph="SELECT * FRO... *" />
+            <marker date="1473911362000" expanded="true" signature="28487:28614" ph="SELECT a.*, sql" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/pdo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12801">
+          <caret line="753" column="23" selection-start-line="753" selection-start-column="23" selection-end-line="753" selection-end-column="23" />
+          <folding>
+            <marker date="1473911380000" expanded="true" signature="4917:4964" ph="INSERT INTO `${$table}`... " />
+            <marker date="1473911380000" expanded="true" signature="6581:6613" ph="UPDATE ${$ta... " />
+            <marker date="1473911380000" expanded="true" signature="7720:7739" ph="DELETE FROM " />
+            <marker date="1473911380000" expanded="true" signature="28754:28941" ph="SELECT * FRO... *" />
+            <marker date="1473911380000" expanded="true" signature="28769:28898" ph="SELECT a.*, sql" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/pgsql.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8398">
+          <caret line="494" column="26" selection-start-line="494" selection-start-column="26" selection-end-line="494" selection-end-column="26" />
+          <folding>
+            <marker date="1473911452000" expanded="true" signature="3804:3849" ph="INSERT INTO ${$table}... " />
+            <marker date="1473911452000" expanded="true" signature="4886:4918" ph="UPDATE ${$ta... " />
+            <marker date="1473911452000" expanded="true" signature="5540:5559" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/sqlsrv.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1473911548000" expanded="true" signature="4199:4244" ph="INSERT INTO ${$table}... " />
+            <marker date="1473911548000" expanded="true" signature="4246:4279" ph="SELECT SCOPE... " />
+            <marker date="1473911548000" expanded="true" signature="5373:5405" ph="UPDATE ${$ta... " />
+            <marker date="1473911548000" expanded="true" signature="6027:6046" ph="DELETE FROM " />
+            <marker date="1473911548000" expanded="true" signature="11544:11564" ph="SELECT TOP 1... ${$table}" />
+            <marker date="1473911548000" expanded="true" signature="20239:20379" ph="SELECT * FRO... ROW_NUMBER" />
+            <marker date="1473911548000" expanded="true" signature="20254:20334" ph="SELECT ${$se... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -502,30 +628,156 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Database/drivers/pgsql.php">
+    <entry file="file://$PROJECT_DIR$/Database/drivers/sqlsrv.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8398">
-          <caret line="494" column="26" selection-start-line="494" selection-start-column="26" selection-end-line="494" selection-end-column="26" />
+        <state relative-caret-position="4165">
+          <caret line="769" column="32" selection-start-line="769" selection-start-column="32" selection-end-line="769" selection-end-column="32" />
           <folding>
-            <marker date="1468467673519" expanded="true" signature="2071:2116" ph="INSERT INTO ${$table}... " />
-            <marker date="1468467673519" expanded="true" signature="3550:3582" ph="UPDATE ${$ta... " />
-            <marker date="1468467673519" expanded="true" signature="4286:4305" ph="DELETE FROM " />
+            <marker date="1473911548000" expanded="true" signature="4199:4244" ph="INSERT INTO ${$table}... " />
+            <marker date="1473911548000" expanded="true" signature="4246:4279" ph="SELECT SCOPE... " />
+            <marker date="1473911548000" expanded="true" signature="5373:5405" ph="UPDATE ${$ta... " />
+            <marker date="1473911548000" expanded="true" signature="6027:6046" ph="DELETE FROM " />
+            <marker date="1473911548000" expanded="true" signature="11544:11564" ph="SELECT TOP 1... ${$table}" />
+            <marker date="1473911548000" expanded="true" signature="20239:20379" ph="SELECT * FRO... ROW_NUMBER" />
+            <marker date="1473911548000" expanded="true" signature="20254:20334" ph="SELECT ${$se... " />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Database/drivers/sqlsrv.php">
+    <entry file="file://$PROJECT_DIR$/Database/drivers/pgsql.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="766" column="12" selection-start-line="766" selection-start-column="12" selection-end-line="766" selection-end-column="12" />
+        <state relative-caret-position="534">
+          <caret line="494" column="26" selection-start-line="494" selection-start-column="24" selection-end-line="494" selection-end-column="24" />
           <folding>
-            <marker date="1468467947076" expanded="true" signature="2425:2470" ph="INSERT INTO ${$table}... " />
-            <marker date="1468467947076" expanded="true" signature="2472:2505" ph="SELECT SCOPE... " />
-            <marker date="1468467947076" expanded="true" signature="4066:4098" ph="UPDATE ${$ta... " />
-            <marker date="1468467947076" expanded="true" signature="4802:4821" ph="DELETE FROM " />
-            <marker date="1468467947076" expanded="true" signature="6754:6774" ph="SELECT TOP 1... ${$table}" />
-            <marker date="1468467947076" expanded="true" signature="14114:14274" ph="SELECT * FRO... ROW_NUMBER" />
-            <marker date="1468467947076" expanded="true" signature="14129:14217" ph="SELECT ${$se... " />
+            <marker date="1473911452000" expanded="true" signature="3804:3849" ph="INSERT INTO ${$table}... " />
+            <marker date="1473911452000" expanded="true" signature="4886:4918" ph="UPDATE ${$ta... " />
+            <marker date="1473911452000" expanded="true" signature="5540:5559" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/pdo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="534">
+          <caret line="753" column="23" selection-start-line="753" selection-start-column="23" selection-end-line="753" selection-end-column="23" />
+          <folding>
+            <marker date="1473911380000" expanded="true" signature="4917:4964" ph="INSERT INTO `${$table}`... " />
+            <marker date="1473911380000" expanded="true" signature="6581:6613" ph="UPDATE ${$ta... " />
+            <marker date="1473911380000" expanded="true" signature="7720:7739" ph="DELETE FROM " />
+            <marker date="1473911380000" expanded="true" signature="28754:28941" ph="SELECT * FRO... *" />
+            <marker date="1473911380000" expanded="true" signature="28769:28898" ph="SELECT a.*, sql" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/oci8.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="534">
+          <caret line="496" column="26" selection-start-line="496" selection-start-column="26" selection-end-line="496" selection-end-column="26" />
+          <folding>
+            <marker date="1473911362000" expanded="true" signature="4734:4903" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper( $table )}\&quot; (${$fields}) VALUES (${$values}) RE... " />
+            <marker date="1473911362000" expanded="true" signature="4943:5128" ph="INSERT INTO \&quot;${strtoupper($this-&gt;username)}\&quot;.\&quot;${strtoupper( $table )}\&quot; (${$fields}) VALUES (${$values}) RE... " />
+            <marker date="1473911362000" expanded="true" signature="7641:7724" ph="DELETE FROM " />
+            <marker date="1473911362000" expanded="true" signature="28472:28656" ph="SELECT * FRO... *" />
+            <marker date="1473911362000" expanded="true" signature="28487:28614" ph="SELECT a.*, sql" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/mongo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="534">
+          <caret line="140" column="5" selection-start-line="140" selection-start-column="5" selection-end-line="140" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="28" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="16" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/Config.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/Collection.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <element signature="e#146#1154#1#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/Database.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="589">
+          <caret line="317" column="4" selection-start-line="317" selection-start-column="4" selection-end-line="317" selection-end-column="4" />
+          <folding>
+            <element signature="e#6#311#0#PHP" expanded="true" />
+            <element signature="e#4516#7478#0#PHP" expanded="false" />
+            <element signature="e#7643#7728#0#PHP" expanded="false" />
+            <element signature="e#7733#7887#0#PHP" expanded="false" />
+            <element signature="e#7897#8016#0#PHP" expanded="false" />
+            <element signature="e#8021#8101#0#PHP" expanded="false" />
+            <element signature="e#8111#8139#0#PHP" expanded="false" />
+            <element signature="e#8144#8389#0#PHP" expanded="false" />
+            <element signature="e#8399#8459#0#PHP" expanded="false" />
+            <element signature="e#8464#8569#0#PHP" expanded="false" />
+            <element signature="e#8579#8693#0#PHP" expanded="false" />
+            <element signature="e#8698#8886#0#PHP" expanded="false" />
+            <element signature="e#8896#9047#0#PHP" expanded="false" />
+            <element signature="e#9052#9255#0#PHP" expanded="false" />
+            <element signature="e#9265#9389#0#PHP" expanded="false" />
+            <element signature="e#9394#9573#0#PHP" expanded="false" />
+            <element signature="e#9588#9746#0#PHP" expanded="false" />
+            <element signature="e#9949#10009#0#PHP" expanded="false" />
+            <element signature="e#10014#10178#0#PHP" expanded="false" />
+            <element signature="e#10188#10220#0#PHP" expanded="false" />
+            <element signature="e#10225#10299#0#PHP" expanded="false" />
+            <element signature="e#10309#10341#0#PHP" expanded="false" />
+            <element signature="e#10346#10422#0#PHP" expanded="false" />
+            <element signature="e#10432#10461#0#PHP" expanded="false" />
+            <element signature="e#10466#10537#0#PHP" expanded="false" />
+            <element signature="e#10547#10565#0#PHP" expanded="false" />
+            <element signature="e#10570#10638#0#PHP" expanded="false" />
+            <marker date="1481015722830" expanded="false" signature="3426:7633" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Database/drivers/mysqli.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="547" column="16" selection-start-line="547" selection-start-column="16" selection-end-line="547" selection-end-column="16" />
+          <folding>
+            <element signature="n#fields#0;n#Kecik_MySqli#0;n#!!top" expanded="false" />
+            <element signature="e#16340#17830#0#PHP" expanded="false" />
+            <element signature="n#where#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#group_by#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#join#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#union#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <element signature="n#find#0;n#QueryHelperMySQLi#0;n#!!top" expanded="false" />
+            <marker date="1481016006817" expanded="true" signature="5911:5958" ph="INSERT INTO `${$table}`... " />
+            <marker date="1481016006817" expanded="true" signature="8042:8076" ph="UPDATE `${$t... " />
+            <marker date="1481016006817" expanded="true" signature="9324:9345" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>

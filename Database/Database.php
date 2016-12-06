@@ -12,7 +12,6 @@
 namespace Kecik;
 
 require_once "Config.php";
-require_once "Collection.php";
 
 /**
  * Database
@@ -57,12 +56,12 @@ class Database
      */
     public function __construct( $config = NULL )
     {
+    
         $app       = Kecik::getInstance();
         $this->app = $app;
+    
+        if ( $config instanceof \DBConfig ) {
         
-        if ( is_callable($config) ) {
-            $config = $config(new DBConfig());
-            
             $this->dsn      = ( !empty( $config->dsn ) ) ? $config->dsn : '';
             $this->driver   = ( !empty( $config->driver ) ) ? strtolower($config->driver) : '';
             $this->hostname = ( !empty( $config->hostname ) ) ? $config->hostname : '';
@@ -78,7 +77,7 @@ class Database
         } else {
             
             $config = $app->config;
-            
+        
             $this->dsn      = ( $config->get('database.dsn') != '' ) ? $config->get('database.dsn') : '';
             $this->driver   = ( $config->get('database.driver') != '' ) ? strtolower(
                 $config->get('database.driver')
@@ -251,7 +250,7 @@ class Database
      *
      * @return res
      **/
-    public function insert( $data, $table = '' )
+    public function insert( Array $data, $table = '' )
     {
         $table = ( !empty( $this->table ) ) ? $this->table : $table;
         
@@ -267,7 +266,7 @@ class Database
      *
      * @return res
      **/
-    public function update( $id, $data, $table = '' )
+    public function update( Array $id, Array$data, $table = '' )
     {
         $table = ( !empty( $this->table ) ) ? $this->table : $table;
         
@@ -289,20 +288,6 @@ class Database
         return $this->db->delete($table, $id);
     }
     
-    /**
-     * @param array  $condition
-     * @param array  $limit
-     * @param array  $order_by
-     * @param string $table
-     *
-     * @return mixed
-     */
-    public function find( $condition = array(), $limit = array(), $order_by = array(), $table = '' )
-    {
-        $table = ( !empty( $this->table ) ) ? $this->table : $table;
-        
-        return $this->db->find($table, $condition, $limit, $order_by);
-    }
     
     /**
      * @param array  $condition
@@ -312,11 +297,11 @@ class Database
      *
      * @return mixed
      */
-    public function rawFind( $condition = array(), $limit = array(), $order_by = array(), $table = '' )
+    public function find( $params = [], $table = '' )
     {
         $table = ( !empty( $this->table ) ) ? $this->table : $table;
-        
-        return $this->db->raw_find($table, $condition, $limit, $order_by);
+    
+        return $this->db->find($table, $params);
     }
     
     /**
